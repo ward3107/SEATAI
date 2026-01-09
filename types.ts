@@ -51,6 +51,16 @@ export interface SeatPos {
   isManualPair?: boolean;
 }
 
+export interface Note {
+  id: string;
+  studentId: string;
+  content: string;
+  createdAt: string;
+  isTask: boolean;
+  reminderDate?: string;
+  isCompleted: boolean;
+}
+
 export interface Translation {
   appTitle: string;
   loginTitle: string;
@@ -86,9 +96,28 @@ export interface Translation {
   loadLayout: string;
   layoutSaved: string;
   layoutLoaded: string;
+  layoutCleared: string;
   aiAnalysisBtn: string;
   aiAnalysisTitle: string;
   classAverage: string;
   studentScore: string;
   generating: string;
+  pedagogicalProfile: string;
+  profileAnalysis: string;
+  cookies: {
+    title: string;
+    intro: string;
+    essentialTitle: string;
+    essentialDesc: string;
+    analyticsTitle: string;
+    analyticsDesc: string;
+    marketingTitle: string;
+    marketingDesc: string;
+    acceptAll: string;
+    saveSelection: string;
+    policyLink: string;
+  };
+  // New Note Keys
+  noNotes: string;
+  asTask: string;
 }

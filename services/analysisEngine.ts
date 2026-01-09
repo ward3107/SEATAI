@@ -67,35 +67,63 @@ export const getPairSynergy = (student1Id: string, student2Id: string, answers: 
   const s1 = answers[student1Id] || { q1: 3, q2: 3, q3: 3, q4: 3, q5: 3 };
   const s2 = answers[student2Id] || { q1: 3, q2: 3, q3: 3, q4: 3, q5: 3 };
   
-  // Logic for determining pedagogical synergy between two students
-  if (s1.q1 <= 2 && s2.q1 >= 4) {
+  // 1. Check for Risks (Priority)
+  // Both Low Focus (q3 <= 2)
+  if (s1.q3 <= 2 && s2.q3 <= 2) {
+    return {
+      score: 45,
+      label: lang === 'he' ? "אתגר קשב משותף" : "Focus Challenge",
+      description: lang === 'he' ? "שני התלמידים מתקשים בריכוז. ישיבה משותפת עלולה להגביר מוסחות." : "Both students struggle with focus. Sitting together might increase distractions.",
+      advantages: lang === 'he' ? ["הבנה הדדית לקושי"] : ["Shared understanding of difficulty"],
+      risks: lang === 'he' ? ["הפרעות הדדיות רבות", "קושי בהתחלת משימה"] : ["Frequent mutual distractions", "Difficulty starting tasks"],
+      type: 'warning'
+    };
+  }
+
+  // Both Low Emotional Resilience (q1 <= 2)
+  if (s1.q1 <= 2 && s2.q1 <= 2) {
+    return {
+      score: 50,
+      label: lang === 'he' ? "רגישות רגשית גבוהה" : "High Emotional Sensitivity",
+      description: lang === 'he' ? "שני התלמידים זקוקים לתמיכה רגשית. קושי לווסת אחד את השני." : "Both students need emotional support. Difficult to regulate each other.",
+      advantages: lang === 'he' ? ["אמפתיה גבוהה"] : ["High empathy"],
+      risks: lang === 'he' ? ["הצפה רגשית משותפת"] : ["Shared emotional escalation"],
+      type: 'warning'
+    };
+  }
+
+  // 2. Check for Synergies
+  // Anchoring (Emotional): Low (<=2) paired with High (>=4)
+  if ((s1.q1 <= 2 && s2.q1 >= 4) || (s2.q1 <= 2 && s1.q1 >= 4)) {
     return {
       score: 88,
-      label: lang === 'he' ? "סינרגיית עגינה רגשית" : "Emotional Anchoring Synergy",
-      description: lang === 'he' ? "חיבור בין תלמיד הזקוק לוויסות לתלמיד בעל חוסן גבוה." : "Pairing a student needing regulation with a high-resilience peer.",
-      advantages: lang === 'he' ? ["שיפור הביטחון העצמי", "יציבות רגשית בקבוצה"] : ["Improved self-confidence", "Emotional stability in the group"],
-      risks: lang === 'he' ? ["תלות יתר במלווה"] : ["Potential over-dependence on the peer"],
+      label: lang === 'he' ? "תמיכה רגשית" : "Emotional Support",
+      description: lang === 'he' ? "תלמיד בעל חוסן גבוה מעניק ביטחון לתלמיד הזקוק לו." : "A resilient student provides stability/confidence to a peer.",
+      advantages: lang === 'he' ? ["אווירה רגועה", "ביטחון עצמי"] : ["Calm atmosphere", "Self-confidence"],
+      risks: lang === 'he' ? ["תלות"] : ["Dependency"],
       type: 'anchoring'
     };
   }
 
-  if (s1.q3 <= 2 && s2.q3 >= 4) {
+  // Modeling (Cognitive/Focus): Low (<=2) paired with High (>=4)
+  if ((s1.q3 <= 2 && s2.q3 >= 4) || (s2.q3 <= 2 && s1.q3 >= 4)) {
     return {
       score: 92,
-      label: lang === 'he' ? "מודלינג קוגניטיבי" : "Cognitive Modeling",
-      description: lang === 'he' ? "הושבה ליד תלמיד ממוקד לשיפור הרגלי למידה וריכוז." : "Seating next to a focused student to improve study habits and focus.",
-      advantages: lang === 'he' ? ["שיפור זמן המשימה", "למידת אסטרטגיות ריכוז"] : ["Improved time-on-task", "Learning focus strategies"],
-      risks: lang === 'he' ? ["הפרעה לתלמיד המודל"] : ["Potential distraction for the modeling student"],
+      label: lang === 'he' ? "חיזוק למידה" : "Focus Boost",
+      description: lang === 'he' ? "תלמיד ממוקד עוזר לחברו לשמור על רצף למידה." : "A focused student helps their peer stay on task.",
+      advantages: lang === 'he' ? ["שיפור הקשב", "למידת עמיתים"] : ["Improved focus", "Peer learning"],
+      risks: lang === 'he' ? ["הסחת דעת לממוקד"] : ["Distraction for the focused student"],
       type: 'modeling'
     };
   }
   
+  // Default Balanced
   return {
     score: 75,
-    label: lang === 'he' ? "התאמה פדגוגית מאוזנת" : "Balanced Pedagogical Match",
-    description: lang === 'he' ? "שילוב המאפשר עבודה משותפת תקינה ומאוזנת." : "A pairing that allows for healthy and balanced collaborative work.",
-    advantages: lang === 'he' ? ["חלוקת עבודה שוויונית"] : ["Equal work distribution"],
-    risks: lang === 'he' ? ["אינטראקציה חברתית מופחתת"] : ["Reduced social interaction"],
+    label: lang === 'he' ? "שילוב טוב" : "Good Match",
+    description: lang === 'he' ? "זיווג למידה סטנדרטי המאפשר עבודה משותפת." : "Standard pair allowing for effective collaboration.",
+    advantages: lang === 'he' ? ["שיתוף פעולה"] : ["Collaboration"],
+    risks: lang === 'he' ? ["אין יתרון מיוחד"] : ["No specific advantage"],
     type: 'balancing'
   };
 };
@@ -280,17 +308,17 @@ export const calculateAutomatedLayout = (
   const findBuddy = (primary: any, pool: any[]) => {
     if (primary.res.q1 <= 2) {
       const buddy = pool.find(s => !s.isAssigned && s.res.q1 >= 4);
-      if (buddy) return { buddy, reason: lang === 'he' ? "עגינה רגשית: חיבור בין תלמיד חרד לתלמיד בעל חוסן גבוה ליציבות." : "Emotional Anchoring: Pairing anxious student with a resilient peer for stability." };
+      if (buddy) return { buddy, reason: lang === 'he' ? "עגינה רגשית: חיבור לתלמיד בעל חוסן גבוה." : "Emotional Anchoring: Pairing with a resilient peer." };
     }
 
     if (primary.res.q3 <= 2) {
       const buddy = pool.find(s => !s.isAssigned && s.res.q3 >= 4);
-      if (buddy) return { buddy, reason: lang === 'he' ? "מודלינג קוגניטיבי: הושבה ליד תלמיד ממוקד לשיפור הרגלי עבודה." : "Cognitive Modeling: Pairing with a focused student to encourage work habits." };
+      if (buddy) return { buddy, reason: lang === 'he' ? "מודלינג קוגניטיבי: הושבה ליד תלמיד ממוקד." : "Cognitive Modeling: Pairing with a focused student." };
     }
 
     if (primary.res.q2 <= 2) {
       const buddy = pool.find(s => !s.isAssigned && s.res.q2 >= 4);
-      if (buddy) return { buddy, reason: lang === 'he' ? "תיווך חברתי: חיבור לתלמיד דומיננטי חברתית לעידוד אינטראקציה." : "Social Integration: Pairing with a social leader to encourage engagement." };
+      if (buddy) return { buddy, reason: lang === 'he' ? "תיווך חברתי: חיבור לתלמיד דומיננטי." : "Social Integration: Pairing with a social leader." };
     }
 
     const buddy = pool.find(s => !s.isAssigned);

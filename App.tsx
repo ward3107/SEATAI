@@ -42,7 +42,11 @@ import {
   Linkedin,
   Instagram,
   FileQuestion,
-  Info
+  Info,
+  Trash2,
+  Bell,
+  Plus,
+  Calendar
 } from 'lucide-react';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Tooltip, Legend } from 'recharts';
 import { GoogleGenAI } from "@google/genai";
@@ -50,7 +54,8 @@ import {
   Language, 
   Student,
   SeatPos,
-  Recommendation
+  Recommendation,
+  Note
 } from './types';
 import { 
   TRANSLATIONS, 
@@ -58,7 +63,8 @@ import {
   MOCK_STUDENTS, 
   MOCK_ANSWERS,
   QUESTION_LABELS,
-  FOOTER_CONTENT
+  FOOTER_CONTENT,
+  CATEGORY_NAMES
 } from './constants';
 import { calculateAutomatedLayout, getPairSynergy, analyzeStudentData, getInsightColor, generateAIDeepAnalysis } from './services/analysisEngine';
 
@@ -195,6 +201,55 @@ const StudentInfoPopover: React.FC<{ student: Student, lang: Language }> = ({ st
   );
 };
 
+const SynergyInfoPopover: React.FC<{ pair: [string, string], lang: Language }> = ({ pair, lang }) => {
+  const synergy = getPairSynergy(pair[0], pair[1], MOCK_ANSWERS, lang);
+  
+  return (
+    <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-72 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-indigo-100 p-5 z-[100] animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none text-left" dir={lang === 'he' || lang === 'ar' ? 'rtl' : 'ltr'}>
+       <div className="flex items-center justify-between mb-3 pb-3 border-b border-slate-100">
+         <div className="flex items-center gap-2">
+            <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600">
+                <Sparkles size={12} />
+            </div>
+            <span className="text-[10px] font-black uppercase tracking-widest text-slate-900 leading-tight max-w-[140px]">{synergy.label}</span>
+         </div>
+         <div className="flex flex-col items-end">
+            <span className="text-lg font-black text-indigo-600 leading-none">{synergy.score}%</span>
+            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Match Score</span>
+         </div>
+       </div>
+       
+       <p className="text-xs font-bold text-slate-600 mb-4 leading-relaxed">{synergy.description}</p>
+       
+       <div className="space-y-3">
+         <div>
+           <h5 className="flex items-center gap-1.5 text-[9px] font-black text-emerald-600 uppercase tracking-widest mb-1.5">
+             <CheckCircle2 size={10} /> Benefits
+           </h5>
+           <div className="flex flex-wrap gap-1.5">
+             {synergy.advantages.map((adv, i) => (
+               <span key={i} className="text-[10px] font-bold px-2 py-1 bg-emerald-50 text-emerald-700 rounded-lg border border-emerald-100/50">{adv}</span>
+             ))}
+           </div>
+         </div>
+
+         <div>
+           <h5 className="flex items-center gap-1.5 text-[9px] font-black text-amber-600 uppercase tracking-widest mb-1.5">
+             <AlertTriangle size={10} /> Risks
+           </h5>
+           <div className="flex flex-wrap gap-1.5">
+             {synergy.risks.map((r, i) => (
+               <span key={i} className="text-[10px] font-bold px-2 py-1 bg-amber-50 text-amber-700 rounded-lg border border-amber-100/50">{r}</span>
+             ))}
+           </div>
+         </div>
+       </div>
+       
+       <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-b border-r border-indigo-100"></div>
+    </div>
+  );
+};
+
 const CookieBanner: React.FC<{ onAccept: () => void, onSettings: () => void, lang: Language }> = ({ onAccept, onSettings, lang }) => {
   const t = TRANSLATIONS[lang].cookies;
   const isRtl = lang === 'he' || lang === 'ar';
@@ -224,9 +279,19 @@ const CookieBanner: React.FC<{ onAccept: () => void, onSettings: () => void, lan
   );
 };
 
-const CookieSettingsModal: React.FC<{ onClose: () => void, lang: Language }> = ({ onClose, lang }) => {
+const CookieSettingsModal: React.FC<{ 
+  onClose: () => void, 
+  onSave: (prefs: { analytics: boolean, marketing: boolean }) => void,
+  initialPrefs: { analytics: boolean, marketing: boolean },
+  lang: Language 
+}> = ({ onClose, onSave, initialPrefs, lang }) => {
   const t = TRANSLATIONS[lang].cookies;
   const isRtl = lang === 'he' || lang === 'ar';
+  const [prefs, setPrefs] = useState(initialPrefs);
+
+  const toggle = (key: 'analytics' | 'marketing') => {
+    setPrefs(prev => ({ ...prev, [key]: !prev[key] }));
+  };
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-200" dir={isRtl ? 'rtl' : 'ltr'}>
@@ -254,8 +319,16 @@ const CookieSettingsModal: React.FC<{ onClose: () => void, lang: Language }> = (
             </div>
             
             {/* Analytics */}
-            <div className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-slate-200 hover:border-indigo-300 transition-colors group cursor-pointer">
-              <div className="mt-1"><ToggleRight className="text-indigo-600 group-hover:scale-110 transition-transform" size={24} /></div>
+            <div 
+              onClick={() => toggle('analytics')}
+              className={`flex items-start gap-4 p-4 rounded-2xl border transition-all cursor-pointer group ${prefs.analytics ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-200 hover:border-indigo-300'}`}
+            >
+              <div className="mt-1">
+                {prefs.analytics ? 
+                  <ToggleRight className="text-indigo-600 transition-transform" size={24} /> : 
+                  <ToggleLeft className="text-slate-300 group-hover:text-indigo-400 transition-colors" size={24} />
+                }
+              </div>
               <div>
                 <h4 className="text-sm font-black text-slate-900 mb-1">{t.analyticsTitle}</h4>
                 <p className="text-xs text-slate-500">{t.analyticsDesc}</p>
@@ -263,8 +336,16 @@ const CookieSettingsModal: React.FC<{ onClose: () => void, lang: Language }> = (
             </div>
 
             {/* Marketing */}
-            <div className="flex items-start gap-4 p-4 rounded-2xl bg-white border border-slate-200 hover:border-indigo-300 transition-colors group cursor-pointer">
-              <div className="mt-1"><ToggleLeft className="text-slate-300 group-hover:text-indigo-600 transition-colors" size={24} /></div>
+            <div 
+              onClick={() => toggle('marketing')}
+              className={`flex items-start gap-4 p-4 rounded-2xl border transition-all cursor-pointer group ${prefs.marketing ? 'bg-indigo-50 border-indigo-200' : 'bg-white border-slate-200 hover:border-indigo-300'}`}
+            >
+              <div className="mt-1">
+                {prefs.marketing ? 
+                  <ToggleRight className="text-indigo-600 transition-transform" size={24} /> : 
+                  <ToggleLeft className="text-slate-300 group-hover:text-indigo-400 transition-colors" size={24} />
+                }
+              </div>
               <div>
                 <h4 className="text-sm font-black text-slate-900 mb-1">{t.marketingTitle}</h4>
                 <p className="text-xs text-slate-500">{t.marketingDesc}</p>
@@ -273,10 +354,16 @@ const CookieSettingsModal: React.FC<{ onClose: () => void, lang: Language }> = (
           </div>
 
           <div className="flex flex-col gap-3">
-            <button onClick={onClose} className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-wide hover:bg-indigo-600 transition-all shadow-lg">
+            <button 
+              onClick={() => onSave({ analytics: true, marketing: true })} 
+              className="w-full py-4 bg-slate-900 text-white rounded-2xl font-black text-sm uppercase tracking-wide hover:bg-indigo-600 transition-all shadow-lg"
+            >
               {t.acceptAll}
             </button>
-            <button onClick={onClose} className="w-full py-4 bg-white text-slate-900 border border-slate-200 rounded-2xl font-black text-sm uppercase tracking-wide hover:bg-slate-50 transition-all">
+            <button 
+              onClick={() => onSave(prefs)} 
+              className="w-full py-4 bg-white text-slate-900 border border-slate-200 rounded-2xl font-black text-sm uppercase tracking-wide hover:bg-slate-50 transition-all"
+            >
               {t.saveSelection}
             </button>
           </div>
@@ -387,6 +474,17 @@ const SynergyModal: React.FC<{ pair: [string, string], lang: Language, onClose: 
   );
 };
 
+// Helper for icons
+const getInsightIcon = (category: string) => {
+  switch(category) {
+    case 'emotional': return <Activity size={16} />;
+    case 'social': return <Users size={16} />;
+    case 'cognitive': return <BrainCircuit size={16} />;
+    case 'behavioral': return <Scale size={16} />;
+    default: return <Sparkles size={16} />;
+  }
+}
+
 const App: React.FC = () => {
   const [lang, setLang] = useState<Language>('he');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -400,8 +498,8 @@ const App: React.FC = () => {
   const [view, setView] = useState<'dashboard' | 'report' | 'seating'>('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
   const [activeSynergyPair, setActiveSynergyPair] = useState<[string, string] | null>(null);
-  const [studentNotes, setStudentNotes] = useState<Record<string, string>>({});
   const [hoveredStudentId, setHoveredStudentId] = useState<string | null>(null);
+  const [hoveredSynergyId, setHoveredSynergyId] = useState<string | null>(null);
 
   const [seatingMode, setSeatingMode] = useState<'auto' | 'manual'>('auto');
   const [autoSeating, setAutoSeating] = useState<Record<string, SeatPos>>({});
@@ -416,17 +514,46 @@ const App: React.FC = () => {
   
   const [showCookieSettings, setShowCookieSettings] = useState(false);
   const [showCookieBanner, setShowCookieBanner] = useState(true);
+  const [cookiePrefs, setCookiePrefs] = useState({ analytics: false, marketing: false });
   const [activeInfoPage, setActiveInfoPage] = useState<string | null>(null);
+
+  // Notes State
+  const [notes, setNotes] = useState<Note[]>([]);
+  const [newNoteContent, setNewNoteContent] = useState('');
+  const [isTaskMode, setIsTaskMode] = useState(false);
+  const [taskDueDate, setTaskDueDate] = useState('');
 
   const t = TRANSLATIONS[lang];
   const isRtl = lang === 'he' || lang === 'ar';
 
+  // Safe JSON parse helper
+  const safeJsonParse = (str: string | null, fallback: any) => {
+    if (!str) return fallback;
+    try {
+      return JSON.parse(str);
+    } catch (e) {
+      console.error("Failed to parse JSON", e);
+      return fallback;
+    }
+  };
+
   useEffect(() => {
     const savedToken = localStorage.getItem('seatai-auth-token');
-    const cookiesAccepted = localStorage.getItem('seatai-cookies-accepted');
+    const savedCookiePrefs = localStorage.getItem('seatai-cookie-prefs');
+    const oldCookiesAccepted = localStorage.getItem('seatai-cookies-accepted');
+    const savedNotes = localStorage.getItem('seatai-notes');
     
-    if (cookiesAccepted) {
+    if (savedCookiePrefs) {
+      setCookiePrefs(safeJsonParse(savedCookiePrefs, { analytics: false, marketing: false }));
       setShowCookieBanner(false);
+    } else if (oldCookiesAccepted) {
+      // Migrate old setting
+      setCookiePrefs({ analytics: true, marketing: true });
+      setShowCookieBanner(false);
+    }
+
+    if (savedNotes) {
+      setNotes(safeJsonParse(savedNotes, []));
     }
 
     if (savedToken) {
@@ -460,11 +587,52 @@ const App: React.FC = () => {
     setTeacherCode('');
   };
 
-  const handleAcceptCookies = () => {
-    localStorage.setItem('seatai-cookies-accepted', 'true');
+  const handleSaveCookiePrefs = (prefs: { analytics: boolean, marketing: boolean }) => {
+    setCookiePrefs(prefs);
+    localStorage.setItem('seatai-cookie-prefs', JSON.stringify(prefs));
     setShowCookieBanner(false);
     setShowCookieSettings(false);
   };
+
+  // Notes Logic
+  const saveNotesToStorage = (updatedNotes: Note[]) => {
+    setNotes(updatedNotes);
+    localStorage.setItem('seatai-notes', JSON.stringify(updatedNotes));
+  };
+
+  const addNote = () => {
+    if (!activeStudent || !newNoteContent.trim()) return;
+    const newNote: Note = {
+      id: Date.now().toString(),
+      studentId: activeStudent.id,
+      content: newNoteContent,
+      createdAt: new Date().toISOString(),
+      isTask: isTaskMode,
+      reminderDate: isTaskMode ? taskDueDate : undefined,
+      isCompleted: false
+    };
+    const updated = [...notes, newNote];
+    saveNotesToStorage(updated);
+    setNewNoteContent('');
+    setIsTaskMode(false);
+    setTaskDueDate('');
+  };
+
+  const toggleTask = (noteId: string) => {
+    const updated = notes.map(n => n.id === noteId ? { ...n, isCompleted: !n.isCompleted } : n);
+    saveNotesToStorage(updated);
+  };
+
+  const deleteNote = (noteId: string) => {
+    const updated = notes.filter(n => n.id !== noteId);
+    saveNotesToStorage(updated);
+  };
+
+  const studentNotesList = useMemo(() => {
+    if (!activeStudent) return [];
+    return notes.filter(n => n.studentId === activeStudent.id).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [activeStudent, notes]);
+
 
   const filteredStudents = useMemo(() => {
     return MOCK_STUDENTS.filter(s => s.classId === selectedClass && MOCK_ANSWERS[s.id] && s.code.toLowerCase().includes(searchQuery.toLowerCase()));
@@ -482,20 +650,38 @@ const App: React.FC = () => {
     return averages;
   }, [filteredStudents]);
 
-  // Handle Seating Mode Transitions and Initial Save Check
+  // Handle Class Selection Changes
+  useEffect(() => {
+    if (selectedClass) {
+      const saved = localStorage.getItem(`seatai-layout-${selectedClass}`);
+      if (saved) {
+        const parsed = safeJsonParse(saved, null);
+        if (parsed) {
+          setManualSeating(parsed);
+          setSeatingMode('manual');
+          setHasSavedLayout(true);
+        } else {
+          setSeatingMode('auto');
+          setHasSavedLayout(false);
+        }
+      } else {
+        setSeatingMode('auto');
+        setHasSavedLayout(false);
+      }
+    }
+  }, [selectedClass]);
+
+  // Handle Seating Layout Calculation
   useEffect(() => {
     if (selectedClass) {
       const result = calculateAutomatedLayout(filteredStudents, MOCK_ANSWERS, lang);
       setAutoSeating(result as any);
-      
-      const saved = localStorage.getItem(`seatai-layout-${selectedClass}`);
-      setHasSavedLayout(!!saved);
 
       if (seatingMode === 'auto') {
         setManualSeating(result as any);
       }
     }
-  }, [selectedClass, lang, filteredStudents]);
+  }, [selectedClass, lang, filteredStudents, seatingMode]);
 
   const currentSeatingMap = seatingMode === 'auto' ? autoSeating : manualSeating;
 
@@ -511,11 +697,22 @@ const App: React.FC = () => {
     if (!selectedClass) return;
     const saved = localStorage.getItem(`seatai-layout-${selectedClass}`);
     if (saved) {
-      setManualSeating(JSON.parse(saved));
-      setSeatingMode('manual');
-      setNotification({ message: t.layoutLoaded, type: 'success' });
-      setTimeout(() => setNotification(null), 3000);
+      const parsed = safeJsonParse(saved, null);
+      if (parsed) {
+        setManualSeating(parsed);
+        setSeatingMode('manual');
+        setNotification({ message: t.layoutLoaded, type: 'success' });
+        setTimeout(() => setNotification(null), 3000);
+      }
     }
+  };
+
+  const handleClearLayout = () => {
+    if (!selectedClass) return;
+    localStorage.removeItem(`seatai-layout-${selectedClass}`);
+    setHasSavedLayout(false);
+    setNotification({ message: t.layoutCleared, type: 'info' });
+    setTimeout(() => setNotification(null), 3000);
   };
 
   const handleGenerateAIAnalysis = async () => {
@@ -541,7 +738,7 @@ const App: React.FC = () => {
   const handleDrop = (e: React.DragEvent, targetRow: number, targetCol: number) => {
     e.preventDefault();
     const studentId = e.dataTransfer.getData('studentId') || draggedStudentId;
-    if (!studentId) return;
+    if (!studentId || !selectedClass) return;
 
     setDragOverDesk(null);
     setDraggedStudentId(null);
@@ -558,12 +755,14 @@ const App: React.FC = () => {
       .filter(([id, pos]) => pos.row === targetRow && pos.col === targetCol)
       .map(([id, pos]) => ({ id, ...pos }));
 
+    const oldPos = newManualSeating[studentId];
+
     if (studentsAtTarget.length >= 2) {
       const targetStudent = studentsAtTarget.find(s => s.seatIndex === 0) || studentsAtTarget[0];
-      const oldPos = newManualSeating[studentId];
       
       if (!oldPos) return;
 
+      // Swap Logic
       newManualSeating[studentId] = { 
         ...oldPos, 
         row: targetRow, 
@@ -578,9 +777,9 @@ const App: React.FC = () => {
         seatIndex: oldPos.seatIndex 
       };
     } else {
-      const oldPos = newManualSeating[studentId];
       if (!oldPos) return;
 
+      // Move Logic
       const nextIndex = studentsAtTarget.length === 0 ? 0 : (studentsAtTarget[0].seatIndex === 0 ? 1 : 0);
       
       newManualSeating[studentId] = { 
@@ -591,7 +790,31 @@ const App: React.FC = () => {
       };
     }
 
+    // Update pair status for both target location and old source location
+    const updatePairStatus = (layout: Record<string, SeatPos>, row: number, col: number) => {
+      const ids = Object.entries(layout)
+        .filter(([_, pos]) => pos.row === row && pos.col === col)
+        .map(([id]) => id);
+      
+      const isPair = ids.length === 2;
+      
+      ids.forEach(id => {
+        if (layout[id]) {
+          layout[id] = { ...layout[id], isManualPair: isPair };
+        }
+      });
+    };
+
+    updatePairStatus(newManualSeating, targetRow, targetCol);
+    if (oldPos) updatePairStatus(newManualSeating, oldPos.row, oldPos.col);
+
     setManualSeating(newManualSeating);
+
+    // Auto-save logic
+    if (selectedClass) {
+      localStorage.setItem(`seatai-layout-${selectedClass}`, JSON.stringify(newManualSeating));
+      setHasSavedLayout(true);
+    }
   };
 
   const handleResetToAI = () => {
@@ -620,8 +843,8 @@ const App: React.FC = () => {
     return (
       <div className="min-h-screen flex flex-col relative overflow-hidden" dir={isRtl ? 'rtl' : 'ltr'}>
         <VideoBackground />
-        {showCookieBanner && <CookieBanner onAccept={handleAcceptCookies} onSettings={() => setShowCookieSettings(true)} lang={lang} />}
-        {showCookieSettings && <CookieSettingsModal onClose={() => setShowCookieSettings(false)} lang={lang} />}
+        {showCookieBanner && <CookieBanner onAccept={() => handleSaveCookiePrefs({ analytics: true, marketing: true })} onSettings={() => setShowCookieSettings(true)} lang={lang} />}
+        {showCookieSettings && <CookieSettingsModal initialPrefs={cookiePrefs} onSave={handleSaveCookiePrefs} onClose={() => setShowCookieSettings(false)} lang={lang} />}
         {activeInfoPage && <InfoModal pageKey={activeInfoPage} lang={lang} onClose={() => setActiveInfoPage(null)} />}
         
         <div className="relative z-10 flex flex-col min-h-screen">
@@ -717,8 +940,8 @@ const App: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 flex" dir={isRtl ? 'rtl' : 'ltr'}>
       {activeSynergyPair && <SynergyModal pair={activeSynergyPair} lang={lang} onClose={() => setActiveSynergyPair(null)} />}
-      {showCookieBanner && <CookieBanner onAccept={handleAcceptCookies} onSettings={() => setShowCookieSettings(true)} lang={lang} />}
-      {showCookieSettings && <CookieSettingsModal onClose={() => setShowCookieSettings(false)} lang={lang} />}
+      {showCookieBanner && <CookieBanner onAccept={() => handleSaveCookiePrefs({ analytics: true, marketing: true })} onSettings={() => setShowCookieSettings(true)} lang={lang} />}
+      {showCookieSettings && <CookieSettingsModal initialPrefs={cookiePrefs} onSave={handleSaveCookiePrefs} onClose={() => setShowCookieSettings(false)} lang={lang} />}
       {activeInfoPage && <InfoModal pageKey={activeInfoPage} lang={lang} onClose={() => setActiveInfoPage(null)} />}
       
       {showManualToast && (
@@ -732,8 +955,8 @@ const App: React.FC = () => {
 
       {notification && (
         <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[1000] animate-in slide-in-from-top-4 duration-300">
-          <div className="bg-emerald-600 text-white px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border border-emerald-500">
-            <CheckCircle2 size={18} />
+          <div className={`px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3 border ${notification.type === 'success' ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-slate-800 text-white border-slate-700'}`}>
+            {notification.type === 'success' ? <CheckCircle2 size={18} /> : <Trash2 size={18} />}
             <span className="text-xs font-black uppercase tracking-widest">{notification.message}</span>
           </div>
         </div>
@@ -852,12 +1075,21 @@ const App: React.FC = () => {
                       </div>
                       <div className="flex gap-4">
                         {hasSavedLayout && (
-                          <button 
-                            onClick={handleLoadLayout}
-                            className="px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl font-black text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
-                          >
-                            <Download size={16} /> {t.loadLayout}
-                          </button>
+                          <div className="flex gap-2">
+                             <button 
+                              onClick={handleLoadLayout}
+                              className="px-6 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl font-black text-xs uppercase tracking-widest flex items-center gap-2 hover:bg-slate-50 transition-all shadow-sm"
+                            >
+                              <Download size={16} /> {t.loadLayout}
+                            </button>
+                            <button 
+                              onClick={handleClearLayout}
+                              className="px-4 py-3 bg-rose-50 border border-rose-100 text-rose-600 rounded-xl font-black text-xs uppercase tracking-widest flex items-center justify-center hover:bg-rose-100 transition-all shadow-sm"
+                              title={t.clearLayout}
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
                         )}
                         
                         <button 
@@ -891,6 +1123,9 @@ const App: React.FC = () => {
                           }).sort((a, b) => (currentSeatingMap[a.id].seatIndex - currentSeatingMap[b.id].seatIndex));
                           
                           const isOver = dragOverDesk?.row === row && dragOverDesk?.col === col;
+                          const isManualPair = deskStudents.length === 2 && 
+                                             seatingMode === 'manual' && 
+                                             deskStudents.some(s => currentSeatingMap[s.id]?.isManualPair);
 
                           return (
                             <LazyView key={`${row}-${col}`} placeholderHeight="h-56">
@@ -903,7 +1138,7 @@ const App: React.FC = () => {
                               >
                                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-white px-4 py-1 rounded-full border border-slate-200 text-[10px] font-black text-slate-400 uppercase tracking-widest">Desk {row + 1}-{col + 1}</div>
                                 
-                                <div className="flex gap-6 items-center">
+                                <div className="flex gap-6 items-center relative z-10">
                                   {deskStudents.length === 0 && (
                                     <div className="w-24 h-24 rounded-2xl border-2 border-slate-100 border-dashed flex items-center justify-center text-slate-200">
                                       <UserPlus size={40} />
@@ -926,8 +1161,8 @@ const App: React.FC = () => {
                                       <span className="text-xs font-black text-slate-900 pointer-events-none">{s.code}</span>
                                       
                                       {/* Indicator for manual override on specific card */}
-                                      {seatingMode === 'manual' && (
-                                        <div className="absolute -top-2 -right-2 w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center text-white shadow-sm border border-white animate-in zoom-in">
+                                      {seatingMode === 'manual' && currentSeatingMap[s.id]?.isManualPair && (
+                                        <div className="absolute -top-2 -right-2 w-5 h-5 bg-rose-500 rounded-full flex items-center justify-center text-white shadow-sm border border-white animate-in zoom-in">
                                           <Hand size={10} />
                                         </div>
                                       )}
@@ -938,16 +1173,43 @@ const App: React.FC = () => {
                                       <UserPlus size={40} />
                                     </div>
                                   )}
-                                </div>
 
-                                {deskStudents.length === 2 && seatingMode === 'auto' && (
-                                  <button 
-                                    onClick={() => setActiveSynergyPair([deskStudents[0].id, deskStudents[1].id])}
-                                    className="mt-6 flex items-center gap-2 px-4 py-1.5 bg-indigo-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest shadow-md hover:bg-indigo-700 active:scale-95 transition-all"
-                                  >
-                                    <LinkIcon size={12} /> View AI Synergy
-                                  </button>
-                                )}
+                                  {/* Visual Connector for Pairs */}
+                                  {deskStudents.length === 2 && (
+                                    <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] h-[120%] -z-10 pointer-events-none transition-all duration-500`}>
+                                      <div className={`absolute inset-0 border-2 rounded-[2.5rem] ${
+                                        isManualPair
+                                        ? 'border-rose-300 bg-rose-50/40 ring-4 ring-rose-100/50' 
+                                        : 'border-indigo-300 bg-indigo-50/40 ring-4 ring-indigo-100/50'
+                                      } transition-all duration-500`} />
+                                      {/* Connecting line */}
+                                      <div className={`absolute top-1/2 left-[20%] right-[20%] h-0.5 -translate-y-1/2 ${
+                                        isManualPair
+                                        ? 'bg-rose-300' 
+                                        : 'bg-indigo-300'
+                                      }`} />
+                                    </div>
+                                  )}
+
+                                  {/* Synergy Node - Appears between students when paired */}
+                                  {deskStudents.length === 2 && (
+                                    <div 
+                                      className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-20"
+                                      onMouseEnter={() => setHoveredSynergyId(`${row}-${col}`)}
+                                      onMouseLeave={() => setHoveredSynergyId(null)}
+                                    >
+                                      <div className={`w-8 h-8 bg-white rounded-full border shadow-md flex items-center justify-center cursor-help hover:scale-110 transition-all group ${
+                                        isManualPair ? 'border-rose-200 hover:border-rose-400' : 'border-indigo-100 hover:border-indigo-400'
+                                      }`}>
+                                        <Zap size={14} className={`${isManualPair ? 'text-rose-400 group-hover:text-rose-600' : 'text-indigo-400 group-hover:text-indigo-600'} fill-current transition-colors opacity-80`} />
+                                      </div>
+                                      
+                                      {hoveredSynergyId === `${row}-${col}` && (
+                                        <SynergyInfoPopover pair={[deskStudents[0].id, deskStudents[1].id]} lang={lang} />
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
                             </LazyView>
                           );
@@ -962,7 +1224,7 @@ const App: React.FC = () => {
                 <div className="space-y-8 animate-in fade-in duration-300">
                   <button onClick={() => setView('dashboard')} className="flex items-center gap-2 text-indigo-600 font-black text-[10px] uppercase tracking-widest px-4 py-2 bg-white rounded-xl border border-slate-100 shadow-sm transition-all"><ChevronLeft size={14} className={isRtl ? 'rotate-180' : ''} />{t.backToDashboard}</button>
                   <div className="bg-white p-8 rounded-[32px] shadow-sm border border-slate-200 flex flex-col md:flex-row justify-between items-center gap-8">
-                    <div className="flex items-center gap-8"><div className="w-20 h-20 bg-indigo-600 text-white rounded-3xl flex items-center justify-center font-black text-4xl shadow-xl">{activeStudent.code.split('-')[1]}</div><div><h3 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">{activeStudent.code}</h3><div className="flex gap-2"><span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-widest">Pedagogical DNA</span></div></div></div>
+                    <div className="flex items-center gap-8"><div className="w-20 h-20 bg-indigo-600 text-white rounded-3xl flex items-center justify-center font-black text-4xl shadow-xl">{activeStudent.code.split('-')[1]}</div><div><h3 className="text-4xl font-black text-slate-900 tracking-tighter mb-2">{activeStudent.code}</h3><div className="flex gap-2"><span className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-[10px] font-black uppercase tracking-widest">{t.pedagogicalProfile}</span></div></div></div>
                     <button className="px-8 py-4 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-indigo-600 transition-all shadow-lg flex items-center gap-2"><Save size={20} /> Save Report</button>
                   </div>
 
@@ -970,7 +1232,7 @@ const App: React.FC = () => {
                     <div className="lg:col-span-2 space-y-8 min-w-0">
                       <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm relative overflow-hidden min-h-[450px]">
                         <div className="flex items-center justify-between mb-8">
-                          <h4 className="text-xl font-black text-slate-900 uppercase tracking-tight">DNA Synthesis</h4>
+                          <h4 className="text-xl font-black text-slate-900 uppercase tracking-tight">{t.profileAnalysis}</h4>
                           <button 
                             onClick={handleGenerateAIAnalysis}
                             disabled={isGeneratingAnalysis}
@@ -1030,12 +1292,24 @@ const App: React.FC = () => {
                             </SafeResponsiveContainer>
                           </div>
                           <div className="flex flex-col justify-center space-y-6">
-                            {analyzeStudentData(MOCK_ANSWERS[activeStudent.id], lang).map((insight, idx) => (
-                              <div key={idx} className={`p-6 rounded-2xl border ${getInsightColor(insight.category).bg} ${getInsightColor(insight.category).border}`}>
-                                <h5 className={`text-sm font-black uppercase mb-3 ${getInsightColor(insight.category).text}`}>{insight.title}</h5>
-                                <p className="text-xs font-bold text-slate-700">{insight.description}</p>
-                              </div>
-                            ))}
+                            {analyzeStudentData(MOCK_ANSWERS[activeStudent.id], lang).map((insight, idx) => {
+                              const styles = getInsightColor(insight.category);
+                              const Icon = getInsightIcon(insight.category);
+                              return (
+                                <div key={idx} className={`p-6 rounded-2xl border ${styles.bg} ${styles.border} transition-all hover:scale-[1.02] hover:shadow-md`}>
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <div className={`p-1.5 rounded-lg bg-white/60 ${styles.text}`}>
+                                      {Icon}
+                                    </div>
+                                    <span className={`text-[10px] font-black uppercase tracking-widest ${styles.text} opacity-80`}>
+                                      {CATEGORY_NAMES[insight.category]?.[lang] || insight.category}
+                                    </span>
+                                  </div>
+                                  <h5 className={`text-sm font-black uppercase mb-2 ${styles.text}`}>{insight.title}</h5>
+                                  <p className="text-xs font-bold text-slate-700 leading-relaxed">{insight.description}</p>
+                                </div>
+                              );
+                            })}
                           </div>
                         </div>
                       </div>
@@ -1064,14 +1338,99 @@ const App: React.FC = () => {
                       </LazyView>
                     </div>
                     <div className="space-y-8">
-                      <div className="bg-white p-8 rounded-[32px] border border-slate-200 shadow-sm h-fit">
-                        <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-8 flex items-center gap-3"><FileText size={18} className="text-indigo-600" /> Professional Notes</h4>
-                        <textarea 
-                          className={`w-full h-48 p-6 bg-slate-50 border rounded-3xl outline-none resize-none text-slate-800 font-bold text-sm ${isRtl ? 'text-right' : 'text-left'}`} 
-                          placeholder="Enter observations..." 
-                          value={studentNotes[activeStudent.id] || ''} 
-                          onChange={e => setStudentNotes({...studentNotes, [activeStudent.id]: e.target.value})} 
-                        />
+                      <div className="bg-white p-6 rounded-[32px] border border-slate-200 shadow-sm h-fit flex flex-col min-h-[500px]">
+                        <h4 className="text-sm font-black text-slate-400 uppercase tracking-widest mb-6 flex items-center gap-3">
+                          <FileText size={18} className="text-indigo-600" /> {t.teacherNotes}
+                        </h4>
+
+                        {/* Notes List */}
+                        <div className="flex-1 overflow-y-auto space-y-4 mb-6 pr-2 max-h-[400px]">
+                          {studentNotesList.length === 0 ? (
+                            <div className="flex flex-col items-center justify-center h-full text-slate-300 gap-2 py-10">
+                              <FileText size={40} className="opacity-20" />
+                              <p className="text-xs font-bold uppercase tracking-widest">{t.noNotes}</p>
+                            </div>
+                          ) : (
+                            studentNotesList.map(note => (
+                              <div key={note.id} className={`p-4 rounded-2xl border transition-all group relative ${note.isTask ? (note.isCompleted ? 'bg-slate-50 border-slate-100' : 'bg-indigo-50/50 border-indigo-100') : 'bg-white border-slate-100'}`}>
+                                <div className="flex justify-between items-start gap-3">
+                                  <div className="flex-1">
+                                    <p className={`text-xs font-bold text-slate-700 leading-relaxed whitespace-pre-wrap ${note.isCompleted ? 'line-through text-slate-400' : ''}`}>
+                                      {note.content}
+                                    </p>
+                                    <div className="flex items-center gap-3 mt-3">
+                                      <span className="text-[10px] font-bold text-slate-400">{new Date(note.createdAt).toLocaleDateString()}</span>
+                                      {note.isTask && note.reminderDate && (
+                                        <span className={`text-[10px] font-black uppercase tracking-widest flex items-center gap-1 ${new Date(note.reminderDate) < new Date() && !note.isCompleted ? 'text-rose-500' : 'text-indigo-400'}`}>
+                                          <Bell size={10} /> {new Date(note.reminderDate).toLocaleDateString()}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  
+                                  <div className="flex flex-col gap-2">
+                                    {note.isTask && (
+                                      <button onClick={() => toggleTask(note.id)} className={`p-1.5 rounded-lg transition-colors ${note.isCompleted ? 'bg-emerald-100 text-emerald-600' : 'bg-white border border-slate-200 text-slate-300 hover:border-indigo-300'}`}>
+                                        <CheckCircle2 size={14} />
+                                      </button>
+                                    )}
+                                    <button onClick={() => deleteNote(note.id)} className="p-1.5 rounded-lg hover:bg-rose-50 text-slate-300 hover:text-rose-500 transition-colors opacity-0 group-hover:opacity-100">
+                                      <Trash2 size={14} />
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          )}
+                        </div>
+
+                        {/* Input Area */}
+                        <div className="border-t border-slate-100 pt-6 mt-auto">
+                          <textarea
+                            value={newNoteContent}
+                            onChange={(e) => setNewNoteContent(e.target.value)}
+                            placeholder={t.notesPlaceholder}
+                            className="w-full h-24 p-4 bg-slate-50 border border-slate-200 rounded-2xl outline-none resize-none text-xs font-bold text-slate-700 focus:bg-white focus:border-indigo-300 transition-all mb-4"
+                          />
+                          
+                          <div className="flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-3">
+                                <button 
+                                  onClick={() => setIsTaskMode(!isTaskMode)}
+                                  className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isTaskMode ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}`}
+                                >
+                                  {isTaskMode ? <CheckCircle2 size={14} /> : <CheckCircle2 size={14} />} 
+                                  {t.asTask}
+                                </button>
+                                
+                                {isTaskMode && (
+                                  <input 
+                                    type="date" 
+                                    value={taskDueDate}
+                                    onClick={(e) => {
+                                      try {
+                                        if (e.currentTarget.showPicker) {
+                                          e.currentTarget.showPicker();
+                                        }
+                                      } catch (error) {
+                                        console.error('Error opening date picker:', error);
+                                      }
+                                    }}
+                                    onChange={(e) => setTaskDueDate(e.target.value)}
+                                    className="bg-slate-50 border-none rounded-xl text-[10px] font-black text-slate-600 p-2 outline-none cursor-pointer hover:bg-slate-100 transition-colors"
+                                  />
+                                )}
+                            </div>
+                            
+                            <button 
+                              onClick={addNote}
+                              disabled={!newNoteContent.trim()}
+                              className="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white hover:bg-indigo-600 transition-all disabled:opacity-50 disabled:hover:bg-slate-900 shadow-lg"
+                            >
+                              <Plus size={20} />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
