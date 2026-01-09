@@ -51,6 +51,13 @@ export interface SeatPos {
   isManualPair?: boolean;
 }
 
+export interface LayoutHistoryItem {
+  id: string;
+  timestamp: string;
+  layout: Record<string, SeatPos>;
+  name?: string;
+}
+
 export interface Note {
   id: string;
   studentId: string;
@@ -97,6 +104,11 @@ export interface Translation {
   layoutSaved: string;
   layoutLoaded: string;
   layoutCleared: string;
+  historyTitle: string;
+  historyEmpty: string;
+  restore: string;
+  delete: string;
+  layoutRestored: string;
   aiAnalysisBtn: string;
   aiAnalysisTitle: string;
   classAverage: string;
