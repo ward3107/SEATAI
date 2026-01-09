@@ -1,0 +1,5 @@
+{
+  "name": "SEATAI - Educational Analytics Platform",
+  "description": "A secure, privacy-first pedagogical analytics system for teachers that generates actionable student insights and seating recommendations based on anonymized data.",
+  "requestFramePermissions": []
+}

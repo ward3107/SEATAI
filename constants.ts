@@ -1,0 +1,404 @@
+
+import { Language, Translation } from './types';
+
+export const QUESTION_LABELS: Record<string, Record<Language, string>> = {
+  q1: { he: 'חוסן רגשי', en: 'Emotional Resilience', ar: 'المرونة العاطفית', ru: 'Эмоциональная устойчивость' },
+  q2: { he: 'צורך חברתי', en: 'Social Need', ar: 'الحاجة الاجتماعية', ru: 'Социальная потребность' },
+  q3: { he: 'מיקוד וקשב', en: 'Focus & Attention', ar: 'التركيز والانتباه', ru: 'Концентрация и внимание' },
+  q4: { he: 'למידה חזותית', en: 'Visual Learning', ar: 'التعلم البصري', ru: 'Визуальное обучение' },
+  q5: { he: 'למידה שמיעתית', en: 'Auditory Learning', ar: 'التعلم السمعي', ru: 'Слуховое обучение' }
+};
+
+export const TRANSLATIONS: Record<Language, any> = {
+  he: {
+    appTitle: "SEATAI",
+    loginTitle: "כניסת סגל פדגוגי",
+    loginSubtitle: "הזיהוי מתבצע מול מאגר משרד החינוך",
+    teacherCodePlaceholder: "קוד אישי",
+    loginButton: "כניסה למערכת",
+    welcomeBack: "ברוך שובך,",
+    notYou: "זה לא אני",
+    authError: "קוד שגוי או משתמש לא מורשה",
+    selectClass: "בחירת כיתה לניהול",
+    studentList: "רשימת תלמידים",
+    reports: "דוחות ותובנות",
+    seating: "המלצת הושבה",
+    emotionalReport: "דוח רגשי (SEL)",
+    cognitiveReport: "דוח קוגניטיבי וסגנונות למידה",
+    actionableRecs: "המלצות פדגוגיות",
+    studentCode: "קוד תלמיד",
+    insights: "תובנות מרכזיות",
+    recommendations: "המלצות לביצוע",
+    seatingLegend: "מפת הושבה חכמה",
+    backToDashboard: "חזרה ללוח הבקרה",
+    logout: "ניתוק מאובטח",
+    analysisInTitle: "ניתוח פדגוגי מבוסס נתונים",
+    analysisInSubtitle: "מערכת תומכת החלטה למורים",
+    teacherNotes: "הערות מורה אישיות",
+    notesPlaceholder: "הקלד הערות על תפקוד, התנהגות או נקודות לשימור...",
+    saveNotes: "שמירת הערות",
+    notesSaved: "הערות נשמרו בהצלחה",
+    synergyDetails: "פרטי סינרגיה",
+    synergyScore: "מדד התאמה פדגוגי",
+    advantages: "יתרונות הזיווג",
+    risks: "נקודות לניטור",
+    close: "סגור",
+    backToClasses: "חזרה לבחירת כיתה",
+    saveLayout: "שמור סידור",
+    loadLayout: "טען סידור שמור",
+    layoutSaved: "סידור הישיבה נשמר בהצלחה",
+    layoutLoaded: "סידור שמור נטען בהצלחה",
+    aiAnalysisBtn: "צור ניתוח עומק (AI)",
+    aiAnalysisTitle: "ניתוח פסיכו-פדגוגי (Gemini AI)",
+    classAverage: "ממוצע כיתתי",
+    studentScore: "התלמיד",
+    generating: "מייצר ניתוח...",
+    cookies: {
+      title: "מרכז ניהול פרטיות (Cookies)",
+      intro: "אנו משתמשים בעוגיות כדי לשפר את החוויה הפדגוגית שלך. בהתאם לתיקון 13 לחוק הגנת הפרטיות, באפשרותך לבחור אילו נתונים לאסוף.",
+      essentialTitle: "עוגיות הכרחיות",
+      essentialDesc: "נחוצות לפעילות התקינה של המערכת ואבטחת המידע. לא ניתן לנטרלן.",
+      analyticsTitle: "אנליטיקה ושיפור שירות",
+      analyticsDesc: "עוזרות לנו להבין איך מורים משתמשים במערכת כדי לשפר את האלגוריתמים.",
+      marketingTitle: "דיוור והתאמה אישית",
+      marketingDesc: "מאפשרות לנו לשלוח לך עדכונים רלוונטיים על תכונות חדשות.",
+      acceptAll: "אישור הכל",
+      saveSelection: "שמירת העדפות",
+      policyLink: "למדיניות המלאה"
+    }
+  },
+  en: {
+    appTitle: "SEATAI",
+    loginTitle: "Faculty Authentication",
+    loginSubtitle: "Verified via Ministry of Education database",
+    teacherCodePlaceholder: "Personal Code",
+    loginButton: "Enter Platform",
+    welcomeBack: "Welcome back,",
+    notYou: "Not you?",
+    authError: "Invalid code or unauthorized user",
+    selectClass: "Select Class to Manage",
+    studentList: "Student List",
+    reports: "Reports & Insights",
+    seating: "Seating Recommendation",
+    emotionalReport: "Emotional Report (SEL)",
+    cognitiveReport: "Cognitive & Learning Styles",
+    actionableRecs: "Pedagogical Recommendations",
+    studentCode: "Student Code",
+    insights: "Key Insights",
+    recommendations: "Action Items",
+    seatingLegend: "Smart Seating Map",
+    backToDashboard: "Back to Dashboard",
+    logout: "Secure Logout",
+    analysisInTitle: "Data-Driven Pedagogical Analysis",
+    analysisInSubtitle: "Decision Support System for Teachers",
+    teacherNotes: "Teacher's Personal Notes",
+    notesPlaceholder: "Type notes about performance, behavior, or points for improvement...",
+    saveNotes: "Save Notes",
+    notesSaved: "Notes saved successfully",
+    synergyDetails: "Synergy Details",
+    synergyScore: "Pedagogical Match Score",
+    advantages: "Pairing Advantages",
+    risks: "Points to Monitor",
+    close: "Close",
+    backToClasses: "Back to Class Selection",
+    saveLayout: "Save Layout",
+    loadLayout: "Load Saved",
+    layoutSaved: "Layout saved successfully",
+    layoutLoaded: "Saved layout loaded successfully",
+    aiAnalysisBtn: "Deep Dive Analysis (AI)",
+    aiAnalysisTitle: "Psycho-Pedagogical Analysis (Gemini AI)",
+    classAverage: "Class Average",
+    studentScore: "Student",
+    generating: "Generating Analysis...",
+    cookies: {
+      title: "Privacy & Cookie Settings",
+      intro: "We use cookies to improve your pedagogical experience. In accordance with Privacy Laws, you can customize your preferences below.",
+      essentialTitle: "Essential Cookies",
+      essentialDesc: "Required for the system to function securely. Cannot be disabled.",
+      analyticsTitle: "Analytics & Improvement",
+      analyticsDesc: "Help us understand how educators use the system to improve our algorithms.",
+      marketingTitle: "Marketing & Communication",
+      marketingDesc: "Allow us to send you relevant updates and pedagogical newsletters.",
+      acceptAll: "Accept All",
+      saveSelection: "Save Preferences",
+      policyLink: "View Full Policy"
+    }
+  },
+  ar: {
+    appTitle: "SEATAI",
+    loginTitle: "تسجيل دخول المعلمين",
+    loginSubtitle: "تم التحقق عبر قاعدة بيانات وزارة التربية والتعليم",
+    teacherCodePlaceholder: "الرمز الشخصي",
+    loginButton: "الدخول إلى النظام",
+    welcomeBack: "مرحبًا بعودتك،",
+    notYou: "ليس أنت؟",
+    authError: "رمز غير صالح أو مستخدم غير مصرح له",
+    selectClass: "اختر الصف للإدارة",
+    studentList: "قائمة الطلاب",
+    reports: "التقارير والرؤى",
+    seating: "توصيات الجلوس",
+    emotionalReport: "التقرير العاطفي (SEL)",
+    cognitiveReport: "التقرير المعرفي وأنماط التعلم",
+    actionableRecs: "توصيات تربوية",
+    studentCode: "رمز الطالب",
+    insights: "رؤى رئيسية",
+    recommendations: "توصيات للتنفيذ",
+    seatingLegend: "خريطة جلوس ذكية",
+    backToDashboard: "عودة للوحة التحكم",
+    logout: "تسجيل خروج آمن",
+    analysisInTitle: "تحليل تربوي قائم على البيانات",
+    analysisInSubtitle: "نظام دعم اتخاذ القرار للمعلمين",
+    teacherNotes: "ملاحظات المعلم الشخصية",
+    notesPlaceholder: "اكتب ملاحظات حول الأداء أو السلوك...",
+    saveNotes: "حفظ الملاحظات",
+    notesSaved: "تم حفظ الملاحظات بنجاح",
+    synergyDetails: "تفاصيل التآزر",
+    synergyScore: "درجة التوافق التربوي",
+    advantages: "مزايا الاقتران",
+    risks: "نقاط للمراقبة",
+    close: "إغلاق",
+    backToClasses: "العودة لاختيار الصف",
+    saveLayout: "حفظ الترتيب",
+    loadLayout: "تحميل الترتيب",
+    layoutSaved: "تم حفظ ترتيب الجلوس بنجاح",
+    layoutLoaded: "تم تحميل الترتيب المحفوظ بنجاح",
+    aiAnalysisBtn: "تحليل عميق (AI)",
+    aiAnalysisTitle: "تحليل نفسي-تربوي (Gemini AI)",
+    classAverage: "متوسط الصف",
+    studentScore: "الطالب",
+    generating: "جاري إنشاء التحليل...",
+    cookies: {
+      title: "إعدادات الخصوصية وملفات تعريف الارتباط",
+      intro: "نحن نستخدم ملفات تعريف الارتباط لتحسين تجربتك التربوية.",
+      essentialTitle: "ملفات تعريف الارتباط الضرورية",
+      essentialDesc: "مطلوبة لكي يعمل النظام بشكل آمن.",
+      analyticsTitle: "التحليلات والتحسين",
+      analyticsDesc: "ساعدنا في فهم كيفية استخدام المعلمين للنظام.",
+      marketingTitle: "التسويق والتواصل",
+      marketingDesc: "اسمح لنا بإرسال تحديثات ذات صلة.",
+      acceptAll: "قبول الكل",
+      saveSelection: "حفظ التفضيلات",
+      policyLink: "عرض السياسة الكاملة"
+    }
+  },
+  ru: {
+    appTitle: "SEATAI",
+    loginTitle: "Аутентификация преподавателя",
+    loginSubtitle: "Проверка через базу данных Министерства образования",
+    teacherCodePlaceholder: "Личный код",
+    loginButton: "Войти в систему",
+    welcomeBack: "С возвращением,",
+    notYou: "Это не вы?",
+    authError: "Неверный код или неавторизованный пользователь",
+    selectClass: "Выберите класс",
+    studentList: "Список учеников",
+    reports: "Отчеты и аналитика",
+    seating: "Рекомендации по рассадке",
+    emotionalReport: "Эмоциональный отчет (SEL)",
+    cognitiveReport: "Когнитивный отчет и стили обучения",
+    actionableRecs: "Педагогические рекомендации",
+    studentCode: "Код ученика",
+    insights: "Ключевые идеи",
+    recommendations: "Рекомендации к действию",
+    seatingLegend: "Умная карта рассадки",
+    backToDashboard: "Назад на панель управления",
+    logout: "Безопасный выход",
+    analysisInTitle: "Педагогический анализ на основе данных",
+    analysisInSubtitle: "Система поддержки принятия решений",
+    teacherNotes: "Личные заметки учителя",
+    notesPlaceholder: "Введите заметки об успеваемости или поведении...",
+    saveNotes: "Сохранить заметки",
+    notesSaved: "Заметки успешно сохранены",
+    synergyDetails: "Детали синергии",
+    synergyScore: "Оценка педагогического соответствия",
+    advantages: "Преимущества пары",
+    risks: "Точки контроля",
+    close: "Закрыть",
+    backToClasses: "Назад к выбору класса",
+    saveLayout: "Сохранить рассадку",
+    loadLayout: "Загрузить рассадку",
+    layoutSaved: "Рассадка успешно сохранена",
+    layoutLoaded: "Сохраненная рассадка загружена",
+    aiAnalysisBtn: "Глубокий анализ (AI)",
+    aiAnalysisTitle: "Психолого-педагогический анализ (Gemini AI)",
+    classAverage: "Среднее по классу",
+    studentScore: "Ученик",
+    generating: "Генерация анализа...",
+    cookies: {
+      title: "Настройки конфиденциальности и Cookie",
+      intro: "Мы используем файлы cookie для улучшения вашего опыта.",
+      essentialTitle: "Обязательные cookie",
+      essentialDesc: "Необходимы для безопасной работы системы.",
+      analyticsTitle: "Аналитика и улучшение",
+      analyticsDesc: "Помогают нам понять, как учителя используют систему.",
+      marketingTitle: "Маркетинг",
+      marketingDesc: "Позволяет нам отправлять вам актуальные обновления.",
+      acceptAll: "Принять все",
+      saveSelection: "Сохранить",
+      policyLink: "Полная политика"
+    }
+  }
+};
+
+export const FOOTER_CONTENT: Record<string, { title: Record<Language, string>, content: Record<Language, string> }> = {
+  overview: {
+    title: { he: "סקירה כללית", en: "Platform Overview", ar: "نظرة عامة", ru: "Обзор платформы" },
+    content: {
+      en: "SEATAI is an advanced educational analytics platform designed to empower teachers with data-driven insights. By analyzing emotional, social, and cognitive metrics, we help educators create optimal learning environments.",
+      he: "SEATAI היא פלטפורמת אנליטיקה חינוכית מתקדמת שנועדה להעצים מורים עם תובנות מבוססות נתונים. על ידי ניתוח מדדים רגשיים, חברתיים וקוגניטיביים, אנו עוזרים למחנכים ליצור סביבות למידה אופטימליות.",
+      ar: "SEATAI هي منصة تحليلات تعليمية متقدمة مصممة لتمكين المعلمين من خلال رؤى تعتمد على البيانات.",
+      ru: "SEATAI - это передовая платформа образовательной аналитики, разработанная для расширения возможностей учителей."
+    }
+  },
+  features: {
+    title: { he: "תכונות המערכת", en: "Key Features", ar: "الميزات الرئيسية", ru: "Основные функции" },
+    content: {
+      en: "• Smart Seating Engine: AI-powered layout optimization.\n• SEL Analytics: Deep dive into student emotional well-being.\n• Synergy Detection: Identifying productive student pairings.\n• Secure Data: End-to-end encryption for all records.",
+      he: "• מנוע הושבה חכם: אופטימיזציה מבוססת AI.\n• אנליטיקת SEL: ניתוח עומק של רווחה רגשית.\n• זיהוי סינרגיה: איתור צמדים פרודוקטיביים.\n• אבטחת מידע: הצפנה מקצה לקצה.",
+      ar: "• محرك جلوس ذكي\n• تحليلات SEL\n• الكشف عن التآزر\n• بيانات آمنة",
+      ru: "• Умная рассадка\n• Аналитика SEL\n• Обнаружение синергии\n• Безопасность данных"
+    }
+  },
+  security: {
+    title: { he: "אבטחה ופרטיות", en: "Security Architecture", ar: "الأمن والخصوصية", ru: "Безопасность" },
+    content: {
+      en: "Security is our top priority. We use AES-256 encryption for data at rest and TLS 1.3 for data in transit. We are fully compliant with GDPR and educational data protection regulations. No student data is ever sold to third parties.",
+      he: "אבטחה היא בראש סדר העדיפויות שלנו. אנו משתמשים בהצפנת AES-256 לנתונים במנוחה ו-TLS 1.3 לתעבורה. אנו עומדים בתקני GDPR ומשרד החינוך.",
+      ar: "الأمن هو أولويتنا القصوى. نحن نستخدم تشفير AES-256 للبيانات.",
+      ru: "Безопасность - наш главный приоритет. Мы используем шифрование AES-256."
+    }
+  },
+  roadmap: {
+    title: { he: "מפת דרכים", en: "Product Roadmap", ar: "خارطة الطريق", ru: "Дорожная карта" },
+    content: {
+      en: "Q4 2024: Integration with LMS platforms.\nQ1 2025: Real-time behavioral tracking app.\nQ2 2025: Predictive analytics for at-risk students.",
+      he: "רבעון 4 2024: אינטגרציה עם מערכות LMS.\nרבעון 1 2025: אפליקציית מעקב התנהגות בזמן אמת.",
+      ar: "الربع الرابع 2024: التكامل مع منصات LMS.",
+      ru: "4 квартал 2024: Интеграция с LMS."
+    }
+  },
+  help: {
+    title: { he: "מרכז עזרה", en: "Help Center", ar: "مركز المساعدة", ru: "Центр помощи" },
+    content: {
+      en: "Need assistance? Our support team is available 24/7. \nEmail: support@seatai.edu\nPhone: 1-800-SEAT-AI\nCheck our Knowledge Base for video tutorials.",
+      he: "זקוקים לעזרה? צוות התמיכה זמין 24/7.\nאימייל: support@seatai.edu\nטלפון: *5555",
+      ar: "تحتاج مساعدة؟ فريق الدعم متاح 24/7.",
+      ru: "Нужна помощь? Наша поддержка доступна 24/7."
+    }
+  },
+  privacy: {
+    title: { he: "מדיניות פרטיות", en: "Privacy Policy", ar: "سياسة الخصوصية", ru: "Политика конфиденциальности" },
+    content: {
+      en: "This Privacy Policy describes how SEATAI collects, uses, and discloses your information. We collect only essential educational data required for generating insights. You have the right to access, correct, or delete your data at any time.",
+      he: "מדיניות זו מתארת כיצד SEATAI אוספת ומשתמשת במידע. אנו אוספים רק מידע חינוכי חיוני הנדרש להפקת תובנות. יש לך זכות לעיין, לתקן או למחוק את המידע בכל עת.",
+      ar: "تصف سياسة الخصوصية هذه كيفية جمع SEATAI لمعلوماتك واستخدامها.",
+      ru: "Эта Политика конфиденциальности описывает, как SEATAI собирает и использует вашу информацию."
+    }
+  },
+  terms: {
+    title: { he: "תנאי שימוש", en: "Terms of Service", ar: "شروط الخدمة", ru: "Условия использования" },
+    content: {
+      en: "By using SEATAI, you agree to these Terms. You must be an authorized educational staff member to access this system. Misuse of student data will result in immediate termination of access and legal action.",
+      he: "בשימוש ב-SEATAI, אתה מסכים לתנאים אלה. הגישה מותרת לסגל חינוכי מורשה בלבד. שימוש לרעה במידע תלמידים יגרור חסימה מיידית והליכים משפטיים.",
+      ar: "باستخدام SEATAI، فإنك توافق على هذه الشروط.",
+      ru: "Используя SEATAI, вы соглашаетесь с этими Условиями."
+    }
+  },
+  accessibility: {
+    title: { he: "הצהרת נגישות", en: "Accessibility Statement", ar: "بيان إمكانية الوصول", ru: "Доступность" },
+    content: {
+      en: "SEATAI is committed to ensuring digital accessibility for people with disabilities. We are continually improving the user experience for everyone and applying the relevant accessibility standards (WCAG 2.1 AA).",
+      he: "SEATAI מחויבת להבטיח נגישות דיגיטלית לאנשים עם מוגבלויות. אנו פועלים ללא הרף לשיפור חווית המשתמש ועומדים בתקני WCAG 2.1 AA.",
+      ar: "تلتزم SEATAI بضمان إمكانية الوصول الرقمي للأشخاص ذوي الإعاقة.",
+      ru: "SEATAI стремится обеспечить цифровую доступность для людей с ограниченными возможностями."
+    }
+  }
+};
+
+// Authorized Staff Database
+export const MOCK_TEACHERS: any[] = [
+  {
+    id: "t1",
+    code: "1234",
+    name: "אריאל כהן",
+    role: "מחנך ז'1",
+    classes: ["כיתה ז'1", "כיתה ח'3"]
+  },
+  {
+    id: "t2",
+    code: "5678",
+    name: "שרה לוי",
+    role: "יועצת פדגוגית",
+    classes: ["כיתה ז'1", "כיתה ח'3"]
+  }
+];
+
+export const MOCK_STUDENTS: any[] = [
+  // Class 1: ז'1 (15 students)
+  { id: "s1", code: "ST-001", classId: "כיתה ז'1" },
+  { id: "s2", code: "ST-002", classId: "כיתה ז'1" },
+  { id: "s3", code: "ST-003", classId: "כיתה ז'1" },
+  { id: "s4", code: "ST-004", classId: "כיתה ז'1" },
+  { id: "s5", code: "ST-005", classId: "כיתה ז'1" },
+  { id: "s6", code: "ST-006", classId: "כיתה ז'1" },
+  { id: "s13", code: "ST-013", classId: "כיתה ז'1" },
+  { id: "s14", code: "ST-014", classId: "כיתה ז'1" },
+  { id: "s15", code: "ST-015", classId: "כיתה ז'1" },
+  { id: "s16", code: "ST-016", classId: "כיתה ז'1" },
+  { id: "s21", code: "ST-021", classId: "כיתה ז'1" },
+  { id: "s22", code: "ST-022", classId: "כיתה ז'1" },
+  { id: "s23", code: "ST-023", classId: "כיתה ז'1" },
+  { id: "s24", code: "ST-024", classId: "כיתה ז'1" },
+  { id: "s25", code: "ST-025", classId: "כיתה ז'1" },
+  
+  // Class 2: ח'3 (15 students)
+  { id: "s7", code: "ST-007", classId: "כיתה ח'3" },
+  { id: "s8", code: "ST-008", classId: "כיתה ח'3" },
+  { id: "s9", code: "ST-009", classId: "כיתה ח'3" },
+  { id: "s10", code: "ST-010", classId: "כיתה ח'3" },
+  { id: "s11", code: "ST-011", classId: "כיתה ח'3" },
+  { id: "s12", code: "ST-012", classId: "כיתה ח'3" },
+  { id: "s17", code: "ST-017", classId: "כיתה ח'3" },
+  { id: "s18", code: "ST-018", classId: "כיתה ח'3" },
+  { id: "s19", code: "ST-019", classId: "כיתה ח'3" },
+  { id: "s20", code: "ST-020", classId: "כיתה ח'3" },
+  { id: "s26", code: "ST-026", classId: "כיתה ח'3" },
+  { id: "s27", code: "ST-027", classId: "כיתה ח'3" },
+  { id: "s28", code: "ST-028", classId: "כיתה ח'3" },
+  { id: "s29", code: "ST-029", classId: "כיתה ח'3" },
+  { id: "s30", code: "ST-030", classId: "כיתה ח'3" },
+];
+
+
+export const MOCK_ANSWERS: Record<string, any> = {
+  "s1": { "q1": 2, "q2": 5, "q3": 1, "q4": 4, "q5": 2 },
+  "s2": { "q1": 5, "q2": 1, "q3": 5, "q4": 2, "q5": 5 },
+  "s3": { "q1": 3, "q2": 3, "q3": 3, "q4": 3, "q5": 3 },
+  "s4": { "q1": 1, "q2": 5, "q3": 2, "q4": 5, "q5": 1 },
+  "s5": { "q1": 4, "q2": 2, "q3": 4, "q4": 4, "q5": 4 },
+  "s6": { "q1": 3, "q2": 4, "q3": 3, "q4": 2, "q5": 4 },
+  "s13": { "q1": 5, "q2": 5, "q3": 4, "q4": 3, "q5": 2 },
+  "s14": { "q1": 2, "q2": 1, "q3": 2, "q4": 5, "q5": 5 },
+  "s15": { "q1": 4, "q2": 3, "q3": 5, "q4": 1, "q5": 3 },
+  "s16": { "q1": 1, "q2": 2, "q3": 1, "q4": 4, "q5": 4 },
+  "s21": { "q1": 5, "q2": 5, "q3": 5, "q4": 5, "q5": 5 },
+  "s22": { "q1": 1, "q2": 1, "q3": 1, "q4": 1, "q5": 1 },
+  "s23": { "q1": 3, "q2": 5, "q3": 2, "q4": 5, "q5": 3 },
+  "s24": { "q1": 4, "q2": 1, "q3": 4, "q4": 1, "q5": 5 },
+  "s25": { "q1": 2, "q2": 3, "q3": 5, "q4": 4, "q5": 2 },
+  "s7": { "q1": 4, "q2": 5, "q3": 2, "q4": 5, "q5": 2 },
+  "s8": { "q1": 2, "q2": 2, "q3": 1, "q4": 3, "q5": 3 },
+  "s9": { "q1": 5, "q2": 4, "q3": 5, "q4": 4, "q5": 4 },
+  "s10": { "q1": 3, "q2": 1, "q3": 4, "q4": 5, "q5": 1 },
+  "s11": { "q1": 4, "q2": 3, "q3": 3, "q4": 2, "q5": 5 },
+  "s12": { "q1": 2, "q2": 5, "q3": 2, "q4": 3, "q5": 4 },
+  "s17": { "q1": 5, "q2": 2, "q3": 5, "q4": 4, "q5": 5 },
+  "s18": { "q1": 3, "q2": 4, "q3": 2, "q4": 2, "q5": 3 },
+  "s19": { "q1": 1, "q2": 5, "q3": 1, "q4": 5, "q5": 1 },
+  "s20": { "q1": 4, "q2": 3, "q3": 4, "q4": 3, "q5": 4 },
+  "s26": { "q1": 5, "q2": 5, "q3": 1, "q4": 2, "q5": 5 },
+  "s27": { "q1": 1, "q2": 1, "q3": 5, "q4": 5, "q5": 1 },
+  "s28": { "q1": 4, "q2": 4, "q3": 4, "q4": 4, "q5": 4 },
+  "s29": { "q1": 2, "q2": 1, "q3": 2, "q4": 3, "q5": 2 },
+  "s30": { "q1": 3, "q2": 5, "q3": 3, "q4": 1, "q5": 4 },
+};
