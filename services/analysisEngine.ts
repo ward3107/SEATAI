@@ -61,7 +61,7 @@ export const generateAIDeepAnalysis = async (
 };
 
 /**
- * Fix: Exporting getPairSynergy to satisfy requirements in App.tsx
+ * Enhanced getPairSynergy with Academic Rationales
  */
 export const getPairSynergy = (student1Id: string, student2Id: string, answers: Record<string, any>, lang: Language = 'he'): PairSynergy => {
   const s1 = answers[student1Id] || { q1: 3, q2: 3, q3: 3, q4: 3, q5: 3 };
@@ -72,10 +72,14 @@ export const getPairSynergy = (student1Id: string, student2Id: string, answers: 
   if (s1.q3 <= 2 && s2.q3 <= 2) {
     return {
       score: 45,
-      label: lang === 'he' ? "אתגר קשב משותף" : "Focus Challenge",
-      description: lang === 'he' ? "שני התלמידים מתקשים בריכוז. ישיבה משותפת עלולה להגביר מוסחות." : "Both students struggle with focus. Sitting together might increase distractions.",
-      advantages: lang === 'he' ? ["הבנה הדדית לקושי"] : ["Shared understanding of difficulty"],
-      risks: lang === 'he' ? ["הפרעות הדדיות רבות", "קושי בהתחלת משימה"] : ["Frequent mutual distractions", "Difficulty starting tasks"],
+      label: lang === 'he' ? "אתגר קשב משותף" : "Mutual Attention Deficit",
+      description: lang === 'he' ? "שני התלמידים מתקשים בריכוז. ישיבה משותפת עלולה להגביר מוסחות." : "High risk of mutual distraction due to shared executive function challenges.",
+      theoryReference: lang === 'he' ? "תיאוריית העומס הקוגניטיבי" : "Cognitive Load Theory & Split Attention",
+      academicRationale: lang === 'he' 
+        ? "חוסר הדדי בבקרת אימפולסים (Impulse Control) יוצר 'הדבקה התנהגותית'. העומס הקוגניטיבי של שניהם עולה כתוצאה מגירויים חיצוניים, ללא גורם מווסת."
+        : "Both students lack sufficient impulse control mechanisms. According to Distraction Conflict Theory, attentional resources are split between the task and the peer, leading to performance degradation without a regulating agent.",
+      advantages: lang === 'he' ? ["הבנה הדדית לקושי"] : ["Shared empathy for difficulty"],
+      risks: lang === 'he' ? ["הפרעות הדדיות רבות", "קושי בהתחלת משימה"] : ["Task initiation failure", "Reinforced off-task behavior"],
       type: 'warning'
     };
   }
@@ -85,8 +89,12 @@ export const getPairSynergy = (student1Id: string, student2Id: string, answers: 
     return {
       score: 50,
       label: lang === 'he' ? "רגישות רגשית גבוהה" : "High Emotional Sensitivity",
-      description: lang === 'he' ? "שני התלמידים זקוקים לתמיכה רגשית. קושי לווסת אחד את השני." : "Both students need emotional support. Difficult to regulate each other.",
-      advantages: lang === 'he' ? ["אמפתיה גבוהה"] : ["High empathy"],
+      description: lang === 'he' ? "שני התלמידים זקוקים לתמיכה רגשית. קושי לווסת אחד את השני." : "Both students require external regulation. Risk of anxiety amplification.",
+      theoryReference: lang === 'he' ? "הדבקה רגשית (Emotional Contagion)" : "Emotional Contagion Theory",
+      academicRationale: lang === 'he'
+        ? "על פי מודל ההדבקה הרגשית, רגשות שליליים (חרדה/תסכול) נוטים לעבור מאדם לאדם. ללא 'עוגן' יציב, יש סכנה ללולאת משוב שלילית (Co-rumination)."
+        : "Based on Emotional Contagion models, negative affect is likely to transfer and amplify between peers. The lack of a stable regulator creates a risk of co-rumination and escalated stress responses.",
+      advantages: lang === 'he' ? ["אמפתיה גבוהה"] : ["Deep mutual understanding"],
       risks: lang === 'he' ? ["הצפה רגשית משותפת"] : ["Shared emotional escalation"],
       type: 'warning'
     };
@@ -97,10 +105,14 @@ export const getPairSynergy = (student1Id: string, student2Id: string, answers: 
   if ((s1.q1 <= 2 && s2.q1 >= 4) || (s2.q1 <= 2 && s1.q1 >= 4)) {
     return {
       score: 88,
-      label: lang === 'he' ? "תמיכה רגשית" : "Emotional Support",
-      description: lang === 'he' ? "תלמיד בעל חוסן גבוה מעניק ביטחון לתלמיד הזקוק לו." : "A resilient student provides stability/confidence to a peer.",
-      advantages: lang === 'he' ? ["אווירה רגועה", "ביטחון עצמי"] : ["Calm atmosphere", "Self-confidence"],
-      risks: lang === 'he' ? ["תלות"] : ["Dependency"],
+      label: lang === 'he' ? "עגינה רגשית (Anchoring)" : "Emotional Anchoring",
+      description: lang === 'he' ? "תלמיד בעל חוסן גבוה מעניק ביטחון ותמיכה לתלמיד הזקוק לו." : "A high-resilience student serves as a stabilizer for a sensitive peer.",
+      theoryReference: lang === 'he' ? "תיאוריית ויסות-הדדי (Co-regulation)" : "Co-regulation & Attachment Theory",
+      academicRationale: lang === 'he'
+        ? "התלמיד החסין משמש כ'עוגן' (Secure Base). נוכחותו השקולה מפעילה נוירוני מראה אצל התלמיד השני, ומאפשרת ויסות רגשי פסיבי והורדת רמות קורטיזול בלמידה."
+        : "The resilient student acts as an external regulator. Through the process of co-regulation, their calm physiological and behavioral baseline helps down-regulate the peer's anxiety via mirroring mechanisms.",
+      advantages: lang === 'he' ? ["הורדת חרדה", "מודלינג להתמודדות"] : ["Anxiety reduction", "Coping modeling"],
+      risks: lang === 'he' ? ["עומס על התלמיד החסין"] : ["Potential burden on anchor"],
       type: 'anchoring'
     };
   }
@@ -109,21 +121,45 @@ export const getPairSynergy = (student1Id: string, student2Id: string, answers: 
   if ((s1.q3 <= 2 && s2.q3 >= 4) || (s2.q3 <= 2 && s1.q3 >= 4)) {
     return {
       score: 92,
-      label: lang === 'he' ? "חיזוק למידה" : "Focus Boost",
-      description: lang === 'he' ? "תלמיד ממוקד עוזר לחברו לשמור על רצף למידה." : "A focused student helps their peer stay on task.",
-      advantages: lang === 'he' ? ["שיפור הקשב", "למידת עמיתים"] : ["Improved focus", "Peer learning"],
-      risks: lang === 'he' ? ["הסחת דעת לממוקד"] : ["Distraction for the focused student"],
+      label: lang === 'he' ? "מודלינג קוגניטיבי" : "Cognitive Modeling",
+      description: lang === 'he' ? "תלמיד ממוקד עוזר לחברו לשמור על רצף למידה והתארגנות." : "A focused student models executive functions for their peer.",
+      theoryReference: lang === 'he' ? "איזור ההתפתחות המקורב (Vygotsky's ZPD)" : "Vygotsky's ZPD & Scaffolding",
+      academicRationale: lang === 'he'
+        ? "התלמיד הממוקד משמש כ'אחר משמעותי' (MKO) בתחום התפקודים הניהוליים. הוא מספק פיגומים (Scaffolding) להתחלת משימה ושמירה על קשב, בתוך איזור ההתפתחות המקורב של חברו."
+        : "Leveraging Vygotsky's Zone of Proximal Development, the focused peer acts as a 'More Knowledgeable Other' regarding executive functions, modeling task initiation and sustained attention strategies that the peer can imitate.",
+      advantages: lang === 'he' ? ["שיפור קשב פסיבי", "למידה עקיפה"] : ["Passive focus improvement", "Vicarious learning"],
+      risks: lang === 'he' ? ["הסחת דעת לממוקד"] : ["Distraction for the model"],
       type: 'modeling'
     };
   }
   
+  // Complementary (Social): Low Social paired with High Social
+  if ((s1.q2 <= 2 && s2.q2 >= 4) || (s2.q2 <= 2 && s1.q2 >= 4)) {
+    return {
+      score: 85,
+      label: lang === 'he' ? "איזון חברתי" : "Social Balancing",
+      description: lang === 'he' ? "חיבור בין תלמיד דומיננטי לתלמיד מופנם ליצירת דינמיקה משלימה." : "Pairing a socially dominant student with a reticent one.",
+      theoryReference: lang === 'he' ? "תיאוריית התלות ההדדית החברתית" : "Social Interdependence Theory",
+      academicRationale: lang === 'he'
+        ? "הזיווג יוצר תלות הדדית חיובית: התלמיד הדומיננטי מתעל את האנרגיה למנהיגות (Facilitation) ומספק 'גשר' חברתי, בעוד התלמיד המופנם מקבל מרחב בטוח לביטוי בתוך דיאדה."
+        : "Creates positive interdependence. The socially active student fulfills a need for leadership/facilitation, providing a scaffolded social entry point for the introverted peer, preventing social withdrawal.",
+      advantages: lang === 'he' ? ["שילוב חברתי", "מנהיגות חיובית"] : ["Social inclusion", "Positive leadership"],
+      risks: lang === 'he' ? ["השתלטות על השיח"] : ["Domineering behavior"],
+      type: 'balancing'
+    };
+  }
+
   // Default Balanced
   return {
     score: 75,
-    label: lang === 'he' ? "שילוב טוב" : "Good Match",
-    description: lang === 'he' ? "זיווג למידה סטנדרטי המאפשר עבודה משותפת." : "Standard pair allowing for effective collaboration.",
-    advantages: lang === 'he' ? ["שיתוף פעולה"] : ["Collaboration"],
-    risks: lang === 'he' ? ["אין יתרון מיוחד"] : ["No specific advantage"],
+    label: lang === 'he' ? "התאמה פדגוגית" : "Pedagogical Fit",
+    description: lang === 'he' ? "פרופילים דומים המאפשרים עבודה שקטה ופורייה." : "Compatible profiles allowing for productive collaboration.",
+    theoryReference: lang === 'he' ? "דמיון-משיכה (Similarity-Attraction)" : "Similarity-Attraction Effect",
+    academicRationale: lang === 'he'
+      ? "הדמיון ברמות הקשב והמזג הרגשי ממזער חיכוכים קוגניטיביים. זהו מצב של 'הומאוסטזיס כיתתי' המאפשר זרימה (Flow) לימודית ללא הפרעות הדדיות משמעותיות."
+      : "Similarity in cognitive tempo and emotional temperament minimizes friction. This pairing supports a state of 'Classroom Homeostasis', allowing for flow states with minimal need for external regulation.",
+    advantages: lang === 'he' ? ["שיתוף פעולה", "יציבות"] : ["Collaboration", "Stability"],
+    risks: lang === 'he' ? ["חוסר אתגר הדדי"] : ["Lack of diverse perspectives"],
     type: 'balancing'
   };
 };
@@ -199,10 +235,6 @@ export const analyzeStudentData = (answers: any, lang: Language = 'he'): Insight
       description: lang === 'he' ? 'קושי משמעותי בשמירה על ריכוז לאורך זמן, זקוק להוראה מתווכת.' : 'Significant difficulty maintaining focus, requires mediated instruction.',
       recommendations: lang === 'he' ? [
         { 
-          /**
-           * Fix: Using double quotes for the outer string to prevent the Hebrew geresh/apostrophe 
-           * from being parsed as a string delimiter and breaking the code block.
-           */
           action: "שיטת 'הצ'ק-ליסט' הויזואלי", 
           practical: 'כתוב על לוח קטן בפינת השולחן של התלמיד את 3 השלבים של המשימה. הנחה אותו לסמן V בסיום כל שלב כדי ליצור תחושת הצלחה ורצף.' 
         },

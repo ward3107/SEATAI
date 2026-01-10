@@ -37,6 +37,8 @@ export interface PairSynergy {
   score: number;
   label: string;
   description: string;
+  academicRationale: string; // New field for deep explanation
+  theoryReference: string;   // New field for the theory name
   advantages: string[];
   risks: string[];
   type: 'anchoring' | 'modeling' | 'balancing' | 'warning';
