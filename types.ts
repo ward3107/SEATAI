@@ -26,7 +26,7 @@ export interface Recommendation {
 }
 
 export interface Insight {
-  category: 'emotional' | 'cognitive' | 'social' | 'behavioral';
+  category: 'emotional' | 'cognitive' | 'social' | 'behavioral' | 'needs';
   level: 'low' | 'medium' | 'high';
   title: string;
   description: string;

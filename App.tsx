@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { 
   Users, 
@@ -58,7 +59,10 @@ import {
   Home,
   History,
   RotateCcw,
-  Armchair
+  Armchair,
+  MapPin,
+  Heart,
+  Lightbulb
 } from 'lucide-react';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Tooltip, Legend } from 'recharts';
 import { GoogleGenAI } from "@google/genai";
@@ -249,78 +253,110 @@ const Logo: React.FC<{ className?: string, variant?: 'light' | 'dark' }> = ({ cl
 const StudentInfoPopover: React.FC<{ student: Student, lang: Language }> = ({ student, lang }) => {
   const answers = MOCK_ANSWERS[student.id];
   const insights = analyzeStudentData(answers, lang);
+  const seatingAdvice = getSeatingAdvice(answers, lang);
   const isRtl = lang === 'he' || lang === 'ar';
 
-  // Determine Learning Style
-  const visualScore = answers.q4 || 0;
-  const auditoryScore = answers.q5 || 0;
-  let learningStyle = { label: 'Balanced', icon: <Layers size={14} />, color: 'text-slate-500' };
-  
-  if (visualScore >= 4 && auditoryScore >= 4) {
-    learningStyle = { label: 'Multi-sensory', icon: <BrainCircuit size={14} />, color: 'text-purple-500' };
-  } else if (visualScore >= 4) {
-    learningStyle = { label: 'Visual Learner', icon: <Eye size={14} />, color: 'text-emerald-500' };
-  } else if (auditoryScore >= 4) {
-    learningStyle = { label: 'Auditory Learner', icon: <Ear size={14} />, color: 'text-blue-500' };
-  }
+  const cognitiveInsights = insights.filter(i => i.category === 'cognitive');
+  const emotionalInsights = insights.filter(i => i.category === 'emotional');
+  const needsInsights = insights.filter(i => i.category === 'needs');
 
   return (
-    <div className={`absolute z-[100] bottom-full mb-4 w-80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-[24px] shadow-2xl border border-slate-200 dark:border-slate-700 p-5 animate-in fade-in zoom-in-95 duration-200 pointer-events-none ring-1 ring-black/5 ${isRtl ? 'right-0' : 'left-0'}`}>
-      {/* Header */}
-      <div className="flex items-center gap-4 mb-5 pb-4 border-b border-slate-100 dark:border-slate-800">
-        <div className="relative">
-          <div className="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-primary-500/20 text-xl">
+    <div className={`absolute z-[100] bottom-full mb-4 w-96 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-[32px] shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden animate-in fade-in zoom-in-95 duration-200 pointer-events-none ring-1 ring-black/5 ${isRtl ? 'right-0' : 'left-0'}`}>
+      
+      {/* Top Banner: Seating Recommendation */}
+      <div className="bg-gradient-to-r from-primary-600 to-indigo-600 p-4 text-white">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-sm">
+              <MapPin size={18} className="text-white" />
+            </div>
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-widest opacity-80">{lang === 'he' ? 'מיקום מומלץ' : 'Best Seat'}</p>
+              <h4 className="text-sm font-black uppercase tracking-wide leading-none mt-0.5">{seatingAdvice.zone}</h4>
+            </div>
+          </div>
+          <div className="text-right">
+             <span className="text-2xl">{seatingAdvice.icon}</span>
+          </div>
+        </div>
+        <p className="text-[10px] font-medium mt-2 opacity-90 leading-tight bg-black/10 p-2 rounded-lg">
+          "{seatingAdvice.reason}"
+        </p>
+      </div>
+
+      <div className="p-5 space-y-5">
+        {/* Header Name */}
+        <div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-2">
+          <div className="w-10 h-10 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center font-black text-slate-500 text-sm">
             {student.code.split('-')[1]}
           </div>
-          <div className="absolute -bottom-1.5 -right-1.5 bg-white dark:bg-slate-800 p-1 rounded-full shadow-sm">
-             <div className={`w-3 h-3 rounded-full ${learningStyle.color.replace('text-', 'bg-')} animate-pulse`} />
+          <div>
+            <h3 className="text-base font-black text-slate-900 dark:text-white leading-none">{student.code}</h3>
+            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Deep Analysis Profile</p>
           </div>
         </div>
-        <div>
-          <p className="text-base font-black text-slate-900 dark:text-white leading-none mb-1.5">{student.code}</p>
-          <div className={`flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest ${learningStyle.color} bg-slate-50 dark:bg-slate-800 px-2 py-1 rounded-lg`}>
-            {learningStyle.icon} {learningStyle.label}
+
+        {/* Cognitive Section */}
+        {cognitiveInsights.length > 0 && (
+          <div>
+            <h5 className="flex items-center gap-2 text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-2">
+              <BrainCircuit size={12} /> {lang === 'he' ? 'פרופיל קוגניטיבי' : 'Cognitive Style'}
+            </h5>
+            <div className="space-y-2">
+              {cognitiveInsights.map((insight, idx) => (
+                <div key={idx} className="bg-emerald-50/50 dark:bg-emerald-900/10 p-3 rounded-xl border border-emerald-100 dark:border-emerald-900/30">
+                  <div className="flex justify-between items-start">
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{insight.title}</p>
+                  </div>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">{insight.description}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </div>
-      
-      {/* Insights */}
-      <div className="space-y-3 mb-5">
-        {insights.slice(0, 2).map((insight, idx) => {
-          const styles = getInsightColor(insight.category);
-          return (
-            <div key={idx} className="flex gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
-              <div className={`mt-0.5 min-w-[3px] w-[3px] rounded-full ${styles.bg.replace('bg-', 'bg-')}-500`} />
-              <div>
-                <h5 className="text-[11px] font-black text-slate-800 dark:text-slate-200 leading-tight mb-1">{insight.title}</h5>
-                <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 leading-normal line-clamp-2">{insight.description}</p>
-              </div>
+        )}
+
+        {/* Emotional Section */}
+        {emotionalInsights.length > 0 && (
+          <div>
+            <h5 className="flex items-center gap-2 text-[10px] font-black text-rose-600 dark:text-rose-400 uppercase tracking-widest mb-2">
+              <Heart size={12} /> {lang === 'he' ? 'מצב רגשי' : 'Emotional State'}
+            </h5>
+            <div className="space-y-2">
+              {emotionalInsights.map((insight, idx) => (
+                <div key={idx} className="bg-rose-50/50 dark:bg-rose-900/10 p-3 rounded-xl border border-rose-100 dark:border-rose-900/30">
+                  <div className="flex justify-between items-start">
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{insight.title}</p>
+                  </div>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 leading-snug">{insight.description}</p>
+                </div>
+              ))}
             </div>
-          );
-        })}
-      </div>
-      
-      {/* Mini Charts */}
-      <div>
-        <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center justify-between">
-          <span>Core Metrics</span>
-          <span className="text-primary-500">{answers.q1 + answers.q2 + answers.q3}/15</span>
-        </p>
-        <div className="space-y-2">
-          {[
-            { l: 'Emotional', v: answers.q1, c: 'bg-rose-500' },
-            { l: 'Social', v: answers.q2, c: 'bg-amber-500' },
-            { l: 'Cognitive', v: answers.q3, c: 'bg-emerald-500' }
-          ].map((m) => (
-            <div key={m.l} className="flex items-center gap-2">
-              <span className="text-[9px] font-bold text-slate-400 w-14">{m.l}</span>
-              <div className="flex-1 h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                <div className={`h-full rounded-full ${m.c} transition-all duration-500`} style={{ width: `${(m.v / 5) * 100}%` }} />
-              </div>
-              <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 w-3 text-right">{m.v}</span>
+          </div>
+        )}
+
+        {/* Needs Section */}
+        {needsInsights.length > 0 && (
+          <div>
+            <h5 className="flex items-center gap-2 text-[10px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-2">
+              <Lightbulb size={12} /> {lang === 'he' ? 'צרכים פדגוגיים' : 'Specific Needs'}
+            </h5>
+            <div className="space-y-2">
+              {needsInsights.map((insight, idx) => (
+                <div key={idx} className="bg-amber-50/50 dark:bg-amber-900/10 p-3 rounded-xl border border-amber-100 dark:border-amber-900/30">
+                  <div className="flex justify-between items-start">
+                    <p className="text-xs font-bold text-slate-800 dark:text-slate-200">{insight.title}</p>
+                  </div>
+                  <div className="mt-1 flex items-start gap-1.5">
+                    <span className="text-amber-500 text-[10px]">👉</span>
+                    <p className="text-[10px] font-bold text-slate-600 dark:text-slate-300 italic leading-snug">
+                      "{insight.recommendations[0]?.practical}"
+                    </p>
+                  </div>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="absolute -bottom-2 left-8 w-4 h-4 bg-white/95 dark:bg-slate-900/95 rotate-45 border-b border-r border-slate-200 dark:border-slate-700 backdrop-blur-xl"></div>
@@ -328,41 +364,73 @@ const StudentInfoPopover: React.FC<{ student: Student, lang: Language }> = ({ st
   );
 };
 
+// ... Rest of the file unchanged ... (SynergyInfoPopover, HistoryModal, CookieBanner, etc.)
+// Re-exporting the rest of the file to ensure validity.
+
 const SynergyInfoPopover: React.FC<{ pair: [string, string], lang: Language }> = ({ pair, lang }) => {
   const synergy = getPairSynergy(pair[0], pair[1], MOCK_ANSWERS, lang);
+  const isRtl = lang === 'he' || lang === 'ar';
   
   return (
-    <div className="absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-72 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-primary-100 dark:border-slate-700 p-5 z-[100] animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none text-left" dir={lang === 'he' || lang === 'ar' ? 'rtl' : 'ltr'}>
+    <div 
+      className={`absolute bottom-full mb-3 left-1/2 -translate-x-1/2 w-80 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-primary-100 dark:border-slate-700 p-5 z-[100] animate-in fade-in slide-in-from-bottom-2 duration-200 pointer-events-none text-left`} 
+      dir={isRtl ? 'rtl' : 'ltr'}
+    >
        <div className="flex items-center justify-between mb-3 pb-3 border-b border-slate-100 dark:border-slate-700">
-         <div className="flex items-center gap-2">
-            <div className="p-1.5 bg-primary-50 dark:bg-primary-900/20 rounded-lg text-primary-600 dark:text-primary-400">
-                <Sparkles size={12} />
+         <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary-50 dark:bg-primary-900/20 rounded-xl text-primary-600 dark:text-primary-400 shadow-sm">
+                <Sparkles size={14} />
             </div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-slate-900 dark:text-white leading-tight max-w-[140px]">{synergy.label}</span>
+            <div>
+                <span className="block text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white leading-tight mb-0.5">{synergy.label}</span>
+                <span className="inline-block px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 rounded text-[9px] font-bold text-slate-500 uppercase tracking-wide">{synergy.theoryReference}</span>
+            </div>
          </div>
          <div className="flex flex-col items-end">
-            <span className="text-lg font-black text-primary-600 dark:text-primary-400 leading-none">{synergy.score}%</span>
-            <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Match Score</span>
+            <span className="text-xl font-black text-primary-600 dark:text-primary-400 leading-none tracking-tight">{synergy.score}%</span>
          </div>
        </div>
        
-       <p className="text-xs font-bold text-slate-600 dark:text-slate-300 mb-4 leading-relaxed">{synergy.description}</p>
+       <div className="mb-4 bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-700/50">
+         <p className="text-[10px] font-bold text-slate-600 dark:text-slate-300 leading-relaxed italic">
+           "{synergy.academicRationale}"
+         </p>
+       </div>
        
-       <div className="space-y-3">
+       <div className="grid grid-cols-2 gap-3 mb-3">
          <div>
            <h5 className="flex items-center gap-1.5 text-[9px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest mb-1.5">
              <CheckCircle2 size={10} /> Benefits
            </h5>
-           <div className="flex flex-wrap gap-1.5">
+           <ul className="space-y-1">
              {synergy.advantages.slice(0, 2).map((adv, i) => (
-               <span key={i} className="text-[10px] font-bold px-2 py-1 bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 rounded-lg border border-emerald-100/50 dark:border-emerald-800/50">{adv}</span>
+               <li key={i} className="text-[9px] font-medium text-emerald-700 dark:text-emerald-300 leading-tight flex items-start gap-1">
+                 <span className="mt-0.5 w-1 h-1 rounded-full bg-emerald-400 shrink-0" />
+                 {adv}
+               </li>
              ))}
-           </div>
+           </ul>
          </div>
-         <p className="text-[9px] font-bold text-slate-400 text-center italic mt-2 border-t border-slate-100 dark:border-slate-700 pt-2">{lang === 'he' ? 'לחץ לפירוט פדגוגי מלא' : 'Click for full pedagogical analysis'}</p>
+         <div>
+           <h5 className="flex items-center gap-1.5 text-[9px] font-black text-amber-600 dark:text-amber-400 uppercase tracking-widest mb-1.5">
+             <AlertTriangle size={10} /> Risks
+           </h5>
+           <ul className="space-y-1">
+             {synergy.risks.slice(0, 2).map((risk, i) => (
+               <li key={i} className="text-[9px] font-medium text-amber-700 dark:text-amber-300 leading-tight flex items-start gap-1">
+                 <span className="mt-0.5 w-1 h-1 rounded-full bg-amber-400 shrink-0" />
+                 {risk}
+               </li>
+             ))}
+           </ul>
+         </div>
        </div>
        
-       <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white dark:bg-slate-900 rotate-45 border-b border-r border-primary-100 dark:border-slate-700"></div>
+       <p className="text-[8px] font-black text-slate-300 dark:text-slate-600 text-center uppercase tracking-[0.2em] mt-2 pt-2 border-t border-slate-50 dark:border-slate-800">
+         {lang === 'he' ? 'לחץ להרחבה' : 'Click to expand'}
+       </p>
+       
+       <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white/95 dark:bg-slate-900/95 rotate-45 border-b border-r border-primary-100 dark:border-slate-700 backdrop-blur-xl"></div>
     </div>
   );
 };
@@ -1095,7 +1163,8 @@ const App: React.FC = () => {
 
     const newManualSeating = { ...manualSeating };
     
-    const studentsAtTarget = Object.entries(newManualSeating)
+    // Explicitly cast to [string, SeatPos][] to avoid 'unknown' type inference on pos
+    const studentsAtTarget = (Object.entries(newManualSeating) as [string, SeatPos][])
       .filter(([id, pos]) => pos.row === targetRow && pos.col === targetCol)
       .map(([id, pos]) => ({ id, ...pos }));
 

@@ -13,7 +13,8 @@ export const CATEGORY_NAMES: Record<string, Record<Language, string>> = {
   emotional: { he: 'רגשי (SEL)', en: 'Emotional (SEL)', ar: 'عاطفي (SEL)', ru: 'Эмоциональный (SEL)' },
   social: { he: 'חברתי', en: 'Social', ar: 'اجتماعي', ru: 'Социальный' },
   cognitive: { he: 'קוגניטיבי', en: 'Cognitive', ar: 'معرفي', ru: 'Когнитивный' },
-  behavioral: { he: 'התנהגותי', en: 'Behavioral', ar: 'سلوكي', ru: 'Поведенческий' }
+  behavioral: { he: 'התנהגותי', en: 'Behavioral', ar: 'سلوكي', ru: 'Поведенческий' },
+  needs: { he: 'צרכים פדגוגיים', en: 'Pedagogical Needs', ar: 'الاحتياجات التربوية', ru: 'Педагогические потребности' }
 };
 
 export const TRANSLATIONS: Record<Language, any> = {
@@ -329,7 +330,7 @@ export const FOOTER_CONTENT: Record<string, { title: Record<Language, string>, c
     }
   },
   help: {
-    title: { he: "מרכז עזרה", en: "Help Center", ar: "مركز المساعدة", ru: "Центр помощи" },
+    title: { he: "מרכז עזרה", en: "Help Center", ar: "مركز המساعدة", ru: "Центр помощи" },
     content: {
       en: "Need assistance? Our support team is available 24/7. \nEmail: support@seatai.edu\nPhone: 1-800-SEAT-AI\nCheck our Knowledge Base for video tutorials.",
       he: "זקוקים לעזרה? צוות התמיכה זמין 24/7.\nאימייל: support@seatai.edu\nטלפון: *5555",
