@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
   <head>
@@ -39,7 +40,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@200;300;400;500;600;700;800&family=Heebo:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     <style>
       :root {
-        /* Default Theme (Indigo) */
         --primary-50: #eef2ff;
         --primary-100: #e0e7ff;
         --primary-200: #c7d2fe;
@@ -53,7 +53,6 @@
         --primary-950: #1e1b4b;
       }
 
-      /* Rose Theme */
       body.theme-rose {
         --primary-50: #fff1f2;
         --primary-100: #ffe4e6;
@@ -68,7 +67,6 @@
         --primary-950: #4c0519;
       }
 
-      /* Emerald Theme */
       body.theme-emerald {
         --primary-50: #ecfdf5;
         --primary-100: #d1fae5;
@@ -83,7 +81,6 @@
         --primary-950: #022c22;
       }
 
-      /* Amber Theme */
       body.theme-amber {
         --primary-50: #fffbeb;
         --primary-100: #fef3c7;
@@ -98,7 +95,6 @@
         --primary-950: #451a03;
       }
 
-      /* Blue Theme */
       body.theme-blue {
         --primary-50: #eff6ff;
         --primary-100: #dbeafe;
@@ -118,7 +114,7 @@
         font-size: 16px;
         line-height: 1.5;
         transition: background-color 0.3s ease, color 0.3s ease;
-        overscroll-behavior-y: none; /* Prevent pull-to-refresh on mobile */
+        overscroll-behavior-y: none;
       }
 
       h1, h2, h3, h4 {
@@ -170,30 +166,24 @@
         background: #0f172a;
       }
     </style>
-    <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@^19.2.3",
-        "react-dom": "https://esm.sh/react-dom@^19.2.3",
-        "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-        "react/": "https://esm.sh/react@^19.2.3/",
-        "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-        "recharts": "https://esm.sh/recharts@^3.6.0",
-        "@google/genai": "https://esm.sh/@google/genai@^1.35.0"
-      }
-    }
-    </script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('./sw.js')
-            .then(registration => console.log('SW registered: ', registration))
-            .catch(registrationError => console.log('SW registration failed: ', registrationError));
-        });
-      }
-    </script>
-  </head>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
+    "vite": "https://esm.sh/vite@^7.3.1",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "@google/genai": "https://esm.sh/@google/genai@^1.37.0",
+    "recharts": "https://esm.sh/recharts@^3.6.0"
+  }
+}
+</script>
+</head>
   <body>
     <div id="root"></div>
+    <!-- Entry point for Vite to start the React application -->
+    <script type="module" src="/index.tsx"></script>
   </body>
 </html>
