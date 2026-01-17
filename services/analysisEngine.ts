@@ -1,5 +1,5 @@
 
-import { StudentAnswers, Insight, Language, PairSynergy, Recommendation } from '../types';
+import { StudentAnswers, Insight, Language, PairSynergy, Recommendation, SeatingShape } from '../types';
 import { GoogleGenAI } from "@google/genai";
 
 export interface PlacementDriver {
@@ -10,12 +10,12 @@ export interface PlacementDriver {
 
 export const getInsightColor = (category: string) => {
   switch (category) {
-    case 'emotional': return { bg: 'bg-rose-50', border: 'border-rose-100', text: 'text-rose-700', icon: 'text-rose-500', fill: '#f43f5e' };
-    case 'social': return { bg: 'bg-amber-50', border: 'border-amber-100', text: 'text-amber-700', icon: 'text-amber-500', fill: '#f59e0b' };
-    case 'cognitive': return { bg: 'bg-emerald-50', border: 'border-emerald-100', text: 'text-emerald-700', icon: 'text-emerald-500', fill: '#10b981' };
-    case 'needs': return { bg: 'bg-violet-50', border: 'border-violet-100', text: 'text-violet-700', icon: 'text-violet-500', fill: '#8b5cf6' };
-    case 'behavioral': return { bg: 'bg-slate-50', border: 'border-slate-100', text: 'text-slate-700', icon: 'text-slate-500', fill: '#64748b' };
-    default: return { bg: 'bg-indigo-50', border: 'border-indigo-100', text: 'text-indigo-700', icon: 'text-indigo-500', fill: '#6366f1' };
+    case 'emotional': return { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-900', icon: 'text-rose-600', fill: '#f43f5e' };
+    case 'social': return { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-900', icon: 'text-amber-600', fill: '#f59e0b' };
+    case 'cognitive': return { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-900', icon: 'text-emerald-600', fill: '#10b981' };
+    case 'needs': return { bg: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-900', icon: 'text-violet-600', fill: '#8b5cf6' };
+    case 'behavioral': return { bg: 'bg-slate-50', border: 'border-slate-200', text: 'text-slate-900', icon: 'text-slate-600', fill: '#64748b' };
+    default: return { bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-900', icon: 'text-indigo-600', fill: '#6366f1' };
   }
 };
 
@@ -57,14 +57,10 @@ export const generateAIDeepAnalysis = async (
   }
 };
 
-/**
- * Enhanced getPairSynergy with deep Academic Rationales for the Popover
- */
 export const getPairSynergy = (student1Id: string, student2Id: string, answers: Record<string, any>, lang: Language = 'he'): PairSynergy => {
   const s1 = answers[student1Id] || { q1: 3, q2: 3, q3: 3, q4: 3, q5: 3 };
   const s2 = answers[student2Id] || { q1: 3, q2: 3, q3: 3, q4: 3, q5: 3 };
   
-  // 1. HIGH RISK: Both struggle with focus
   if (s1.q3 <= 2 && s2.q3 <= 2) {
     return {
       score: 42,
@@ -74,13 +70,12 @@ export const getPairSynergy = (student1Id: string, student2Id: string, answers: 
       academicRationale: lang === 'he' 
         ? "חוסר הדדי בבקרת אימפולסים (Executive Functions) יוצר 'הדבקה התנהגותית'. העומס הקוגניטיבי של שניהם עולה כתוצאה מגירויים חיצוניים ללא 'עוגן' מרסן."
         : "Pairing two students with limited impulse control creates a 'behavioral contagion' effect. Without an external regulator, the shared cognitive load increases exponentially.",
-      advantages: lang === 'he' ? ["הבנה הדדית"] : ["Shared empathy"],
+      advantages: lang === 'he' ? ["הבנה הדדיות"] : ["Shared empathy"],
       risks: lang === 'he' ? ["הפרעות הדדיות רבות", "קושי בהתחלת משימה"] : ["Mutual distraction", "Task initiation failure"],
       type: 'warning'
     };
   }
 
-  // 2. SYNERGY: Anchor Pairing (High Resilience + Low Resilience)
   if ((s1.q1 <= 2 && s2.q1 >= 4) || (s2.q1 <= 2 && s1.q1 >= 4)) {
     return {
       score: 92,
@@ -96,7 +91,6 @@ export const getPairSynergy = (student1Id: string, student2Id: string, answers: 
     };
   }
 
-  // 3. SYNERGY: Cognitive Modeling (High Focus + Low Focus)
   if ((s1.q3 <= 2 && s2.q3 >= 4) || (s2.q3 <= 2 && s1.q3 >= 4)) {
     return {
       score: 88,
@@ -112,7 +106,6 @@ export const getPairSynergy = (student1Id: string, student2Id: string, answers: 
     };
   }
   
-  // 4. BALANCED: Pedagogical Fit
   return {
     score: 75,
     label: lang === 'he' ? "התאמה פדגוגית" : "Pedagogical Fit",
@@ -131,7 +124,6 @@ export const analyzeStudentData = (answers: any, lang: Language = 'he'): Insight
   const responses = answers;
   const insights: Insight[] = [];
 
-  // --- COGNITIVE ANALYSIS ---
   if (responses['q4'] >= 4) {
     insights.push({
       category: 'cognitive',
@@ -168,7 +160,6 @@ export const analyzeStudentData = (answers: any, lang: Language = 'he'): Insight
     });
   }
 
-  // --- EMOTIONAL ANALYSIS ---
   if (responses['q1'] <= 2) {
     insights.push({
       category: 'emotional',
@@ -187,7 +178,6 @@ export const analyzeStudentData = (answers: any, lang: Language = 'he'): Insight
     });
   }
 
-  // --- NEEDS / SOCIAL ---
   if (responses['q2'] >= 4) {
     insights.push({
       category: 'needs',
@@ -256,82 +246,82 @@ export const getSeatingAdvice = (responses: Record<string, number>, lang: Langua
 export const calculateAutomatedLayout = (
   students: any[], 
   answers: Record<string, any>, 
-  lang: Language
+  lang: Language,
+  shape: SeatingShape = 'rows'
 ): Record<string, { row: number, col: number, seatIndex: number, matchReason: string }> => {
   const layout: Record<string, { row: number, col: number, seatIndex: number, matchReason: string }> = {};
   
-  const studentData = students.map(s => {
-    const res = answers[s.id] || { q1: 3, q2: 3, q3: 3, q4: 3, q5: 3 };
-    let row = 2;
-    let col = 1;
-    if (res.q3 <= 2) row = 0;
-    else if (res.q3 >= 4) row = 3;
-    
-    if (res.q1 <= 2) col = 0;
-    else if (res.q2 >= 4) col = 2;
+  const studentData = [...students].map(s => ({
+    id: s.id,
+    res: answers[s.id] || { q1: 3, q2: 3, q3: 3, q4: 3, q5: 3 },
+    isAssigned: false
+  }));
 
-    return {
-      id: s.id,
-      code: s.code,
-      res,
-      advice: { row, col },
-      isAssigned: false
-    };
-  });
-
+  // Sort students by "Need Level" (lowest focus/resilience first)
   studentData.sort((a, b) => {
     const scoreA = (5 - a.res.q1) + (5 - a.res.q3);
     const scoreB = (5 - b.res.q1) + (5 - b.res.q3);
     return scoreB - scoreA;
   });
 
-  const desks: { row: number, col: number, seats: string[] }[] = [];
-  for (let r = 0; r < 4; r++) {
-    for (let c = 0; c < 2; c++) {
-      desks.push({ row: r, col: c, seats: [] });
+  const desks: { row: number, col: number, capacity: number, assigned: string[] }[] = [];
+  
+  if (shape === 'rows') {
+    // 5 rows, 3 columns of double desks = 15 desks = 30 students
+    for (let r = 0; r < 5; r++) {
+      for (let c = 0; c < 3; c++) {
+        desks.push({ row: r, col: c, capacity: 2, assigned: [] });
+      }
+    }
+  } else if (shape === 'clusters') {
+    // 6 clusters of 5-6 students = 30-36 capacity
+    for (let r = 0; r < 3; r++) {
+      for (let c = 0; c < 2; c++) {
+        desks.push({ row: r, col: c, capacity: 6, assigned: [] });
+      }
+    }
+  } else if (shape === 'ushape') {
+    // Perimeter of a 5x5 grid (approx 16 desk blocks)
+    for (let r = 0; r < 5; r++) {
+      for (let c = 0; c < 5; c++) {
+        if (r === 0 || c === 0 || c === 4) {
+           desks.push({ row: r, col: c, capacity: 2, assigned: [] });
+        }
+      }
     }
   }
 
   const findBuddy = (primary: any, pool: any[]) => {
     if (primary.res.q1 <= 2) {
       const buddy = pool.find(s => !s.isAssigned && s.res.q1 >= 4);
-      if (buddy) return { buddy, reason: lang === 'he' ? "עגינה רגשית: חיבור לתלמיד בעל חוסן גבוה." : "Emotional Anchoring: Pairing with a resilient peer." };
+      if (buddy) return { buddy, reason: lang === 'he' ? "עגינה רגשית" : "Emotional Anchoring" };
     }
-
     if (primary.res.q3 <= 2) {
       const buddy = pool.find(s => !s.isAssigned && s.res.q3 >= 4);
-      if (buddy) return { buddy, reason: lang === 'he' ? "מודלינג קוגניטיבי: הושבה ליד תלמיד ממוקד." : "Cognitive Modeling: Pairing with a focused student." };
+      if (buddy) return { buddy, reason: lang === 'he' ? "מודלינג קוגניטיבי" : "Cognitive Modeling" };
     }
-
-    if (primary.res.q2 <= 2) {
-      const buddy = pool.find(s => !s.isAssigned && s.res.q2 >= 4);
-      if (buddy) return { buddy, reason: lang === 'he' ? "תיווך חברתי: חיבור לתלמיד דומיננטי." : "Social Integration: Pairing with a social leader." };
-    }
-
     const buddy = pool.find(s => !s.isAssigned);
-    return buddy ? { buddy, reason: lang === 'he' ? "התאמה פדגוגית מאוזנת." : "Balanced pedagogical match." } : null;
+    return buddy ? { buddy, reason: lang === 'he' ? "התאמה פדגוגית." : "Pedagogical match." } : null;
   };
 
   studentData.forEach(student => {
     if (student.isAssigned) return;
 
-    let desk = desks.find(d => d.row === student.advice.row && d.seats.length === 0);
-    if (!desk) desk = desks.find(d => d.seats.length === 0);
-    if (!desk) desk = desks.find(d => d.seats.length < 2);
-
+    // Find first available desk
+    const desk = desks.find(d => d.assigned.length < d.capacity);
     if (desk) {
       student.isAssigned = true;
-      desk.seats.push(student.id);
-
-      const match = findBuddy(student, studentData);
-      if (match && desk.seats.length < 2) {
-        match.buddy.isAssigned = true;
-        desk.seats.push(match.buddy.id);
-
-        layout[student.id] = { row: desk.row, col: desk.col, seatIndex: 0, matchReason: match.reason };
-        layout[match.buddy.id] = { row: desk.row, col: desk.col, seatIndex: 1, matchReason: match.reason };
+      desk.assigned.push(student.id);
+      
+      const buddyInfo = findBuddy(student, studentData);
+      if (buddyInfo && desk.assigned.length < desk.capacity) {
+        buddyInfo.buddy.isAssigned = true;
+        desk.assigned.push(buddyInfo.buddy.id);
+        
+        layout[student.id] = { row: desk.row, col: desk.col, seatIndex: desk.assigned.length - 2, matchReason: buddyInfo.reason };
+        layout[buddyInfo.buddy.id] = { row: desk.row, col: desk.col, seatIndex: desk.assigned.length - 1, matchReason: buddyInfo.reason };
       } else {
-        layout[student.id] = { row: desk.row, col: desk.col, seatIndex: desk.seats.length - 1, matchReason: lang === 'he' ? "הושבה אינדיבידואלית מותאמת." : "Individual adapted seating." };
+        layout[student.id] = { row: desk.row, col: desk.col, seatIndex: desk.assigned.length - 1, matchReason: lang === 'he' ? "הושבה מותאמת." : "Individual seating." };
       }
     }
   });

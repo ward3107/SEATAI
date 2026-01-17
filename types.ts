@@ -1,5 +1,6 @@
 
 export type Language = 'he' | 'en' | 'ar' | 'ru';
+export type SeatingShape = 'rows' | 'clusters' | 'ushape';
 
 export interface Teacher {
   id: string;
@@ -57,6 +58,7 @@ export interface LayoutHistoryItem {
   id: string;
   timestamp: string;
   layout: Record<string, SeatPos>;
+  shape: SeatingShape;
   name?: string;
 }
 
